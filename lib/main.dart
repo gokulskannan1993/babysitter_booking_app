@@ -13,11 +13,11 @@ class BabysitterBookingApp extends StatelessWidget {
           textTheme: TextTheme(
         bodyText2: TextStyle(color: Colors.black54),
       )),
-      initialRoute: WelcomeScreen().id,
+      initialRoute: WelcomeScreen.id,
       routes: {
-        WelcomeScreen().id: (context) => WelcomeScreen(),
-        LoginScreen().id: (context) => LoginScreen(),
-        RegisterScreen().id: (context) => RegisterScreen(),
+        WelcomeScreen.id: (context) => WelcomeScreen(),
+        LoginScreen.id: (context) => LoginScreen(),
+        RegisterScreen.id: (context) => RegisterScreen(),
       },
     );
   }

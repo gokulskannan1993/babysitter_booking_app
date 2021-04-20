@@ -1,7 +1,11 @@
+import 'package:babysitter_booking_app/screens/login_screen.dart';
+import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'components/loginregisterationbutton.dart';
+
 class WelcomeScreen extends StatefulWidget {
-  String id = "welcome_screen";
+  static String id = "welcome_screen";
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -16,40 +20,37 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                elevation: 5.0,
-                color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to login screen.
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Log In',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Baby Watch',
+                  style: TextStyle(
+                    fontSize: 45.0,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
+              ],
+            ),
+            SizedBox(
+              height: 48.0,
+            ),
+            Hero(
+              tag: "loginTag",
+              child: LoginRegisterButton(
+                textColor: Colors.white,
+                backgroundColor: Colors.lightBlueAccent,
+                btnText: "Login",
+                targetScreen: LoginScreen.id,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                elevation: 5.0,
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to registration screen.
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Register',
-                  ),
-                ),
+            Hero(
+              tag: "registerTag",
+              child: LoginRegisterButton(
+                textColor: Colors.white,
+                backgroundColor: Colors.blueAccent,
+                btnText: "Register",
+                targetScreen: RegisterScreen.id,
               ),
             ),
           ],
