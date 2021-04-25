@@ -2,10 +2,10 @@ import 'package:babysitter_booking_app/screens/login_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'components/loginregisterationbutton.dart';
+import 'widgets/loginregisterationbutton.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static String id = "welcome_screen";
+  static String routeName = "welcome_screen";
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -24,7 +24,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Baby Watch',
+                  'BabyWatch',
                   style: TextStyle(
                     fontSize: 45.0,
                     fontWeight: FontWeight.w900,
@@ -39,18 +39,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               tag: "loginTag",
               child: LoginRegisterButton(
                 textColor: Colors.white,
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: Colors.black,
                 btnText: "Login",
-                targetScreen: LoginScreen.id,
+                targetScreen: LoginScreen.routeName,
               ),
             ),
             Hero(
               tag: "registerTag",
               child: LoginRegisterButton(
                 textColor: Colors.white,
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: Colors.black,
                 btnText: "Register",
-                targetScreen: RegisterScreen.id,
+                targetScreen: RegisterScreen.routeName,
               ),
             ),
           ],

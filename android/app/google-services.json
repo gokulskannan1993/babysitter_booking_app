@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "610483272053",
+    "project_id": "babywatch-1593f",
+    "storage_bucket": "babywatch-1593f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610483272053:android:bc1dbf6dc4cdd17fa87b3c",
+        "android_client_info": {
+          "package_name": "gokulskannan.babysitter_booking_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610483272053-d8k6dbp5orbe665kn7rjatf5jfgsgq2o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtuBd7Hb7SQFFFQ3sNT_lAd1spI2WpI9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610483272053-d8k6dbp5orbe665kn7rjatf5jfgsgq2o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

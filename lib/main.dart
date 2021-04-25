@@ -1,4 +1,7 @@
+import 'package:babysitter_booking_app/screens/home_screen.dart';
 import 'package:babysitter_booking_app/screens/login_screen.dart';
+import 'package:babysitter_booking_app/screens/map_screen.dart';
+import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +16,16 @@ class BabysitterBookingApp extends StatelessWidget {
           textTheme: TextTheme(
         bodyText2: TextStyle(color: Colors.black54),
       )),
-      initialRoute: WelcomeScreen.id,
+
+      //Routing to Different Screens
+      initialRoute: ProfileScreen.routeName,
       routes: {
-        WelcomeScreen.id: (context) => WelcomeScreen(),
-        LoginScreen.id: (context) => LoginScreen(),
-        RegisterScreen.id: (context) => RegisterScreen(),
+        WelcomeScreen.routeName: (context) => WelcomeScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+        HomeScreen.routeName: (context) => HomeScreen(),
+        ProfileScreen.routeName: (context) => ProfileScreen(),
+        MapScreen.routeName: (context) => MapScreen(),
       },
     );
   }
