@@ -1,3 +1,4 @@
+import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       body: ListView(children: [
         Container(
-          color: Colors.black,
+          color: kSecondaryColor,
           height: MediaQuery.of(context).size.height * 0.3,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -28,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       bottom: 3,
                       right: 2,
                       child: CircleAvatar(
-                          backgroundColor: Colors.white,
+                          backgroundColor: kPrimaryColor,
                           radius: 15,
                           child: (Icon(Icons.edit)))),
                 ]),
@@ -37,11 +38,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Text(
                   "Gokul",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: kPrimaryColor),
                 ),
                 Text(
                   "Dublin, Ireland",
-                  style: TextStyle(fontSize: 16, color: Colors.white60),
+                  style: TextStyle(fontSize: 16, color: kTextColorLight),
                 ),
               ],
             ),
@@ -92,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 title: Text(
                   "Location",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: kSecondaryColor),
                 ),
                 subtitle: Text("806 Howth Road, Dublin 5"),
                 leading: Icon(Icons.location_on),
@@ -100,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 title: Text(
                   "Email",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: kSecondaryColor),
                 ),
                 subtitle: Text("gokul@example.com"),
                 leading: Icon(Icons.email),
@@ -108,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 title: Text(
                   "Phone",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: kSecondaryColor),
                 ),
                 subtitle: Text("09939384849"),
                 leading: Icon(Icons.phone),
@@ -116,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 title: Text(
                   "About My Child",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: kSecondaryColor),
                 ),
                 subtitle: Text("This is me"),
                 leading: Icon(Icons.info),

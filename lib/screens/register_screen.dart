@@ -1,3 +1,4 @@
+import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -7,10 +8,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
+  bool state = false;
+  String roleString = "I am a Babysitter";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kPrimaryColor,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -35,11 +38,11 @@ class _RegisterScreen extends State<RegisterScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 1.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 2.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
               ),
@@ -59,11 +62,11 @@ class _RegisterScreen extends State<RegisterScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 1.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 2.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
               ),
@@ -83,15 +86,34 @@ class _RegisterScreen extends State<RegisterScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 1.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                  borderSide: BorderSide(color: kSecondaryColor, width: 2.0),
                   borderRadius: BorderRadius.all(Radius.circular(32.0)),
                 ),
               ),
             ), // confirm password
+            SizedBox(
+              height: 24.0,
+            ),
+            SwitchListTile(
+                title: Text(
+                  roleString,
+                  style: TextStyle(
+                    color: kMediumDarkText,
+                  ),
+                ),
+                activeColor: kSecondaryColor,
+                inactiveThumbColor: kSecondaryColor,
+                value: state,
+                onChanged: (bool value) {
+                  setState(() {
+                    state = value;
+                    roleString = value ? "I am a Parent" : "I am a Babysitter";
+                  });
+                }),
             SizedBox(
               height: 24.0,
             ),
@@ -100,7 +122,7 @@ class _RegisterScreen extends State<RegisterScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Material(
-                  color: Colors.blueAccent,
+                  color: kSecondaryColor,
                   borderRadius: BorderRadius.all(Radius.circular(30.0)),
                   elevation: 5.0,
                   child: MaterialButton(
@@ -111,7 +133,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                     height: 42.0,
                     child: Text(
                       'Register',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: kPrimaryColor),
                     ),
                   ),
                 ),

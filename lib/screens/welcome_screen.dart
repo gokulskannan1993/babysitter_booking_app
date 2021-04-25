@@ -1,3 +1,4 @@
+import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/login_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +39,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Hero(
               tag: "loginTag",
               child: LoginRegisterButton(
-                textColor: Colors.white,
-                backgroundColor: Colors.black,
+                textColor: kPrimaryColor,
+                backgroundColor: kSecondaryColor,
                 btnText: "Login",
                 targetScreen: LoginScreen.routeName,
               ),
@@ -47,8 +48,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Hero(
               tag: "registerTag",
               child: LoginRegisterButton(
-                textColor: Colors.white,
-                backgroundColor: Colors.black,
+                textColor: kPrimaryColor,
+                backgroundColor: kSecondaryColor,
                 btnText: "Register",
                 targetScreen: RegisterScreen.routeName,
               ),
