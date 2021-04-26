@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-//Buttons in the welcome, login and registration screen
+//Buttons in the welcome, login and registration screen and many other screens
 class CustomLargeButton extends StatelessWidget {
   final Color textColor, backgroundColor;
   final String btnText;
-  final Function onPressed;
+  final Function onPressed; //event handler function
   //constructor
   CustomLargeButton(
       {@required this.textColor,
@@ -22,9 +22,6 @@ class CustomLargeButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
         child: MaterialButton(
           onPressed: onPressed,
-          //   //Go to target screen.
-          //   Navigator.pushNamed(context, targetScreen);
-          // },
           minWidth: 200.0,
           height: 42.0,
           child: Text(

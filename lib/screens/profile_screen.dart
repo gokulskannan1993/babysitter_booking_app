@@ -1,4 +1,5 @@
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -8,6 +9,31 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String email;
+
+  //fire auth instance
+  final _auth = FirebaseAuth.instance;
+  User loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  //checks for user
+  void getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        email = loggedInUser.email;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,20 +118,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Divider(),
               ListTile(
                 title: Text(
+                  "Personal Information",
+                  style: TextStyle(color: kSecondaryColor),
+                ),
+                subtitle: Text("This is me"),
+                leading: Icon(Icons.info),
+              ), // personal info
+              ListTile(
+                title: Text(
                   "Location",
                   style: TextStyle(color: kSecondaryColor),
                 ),
                 subtitle: Text("806 Howth Road, Dublin 5"),
                 leading: Icon(Icons.location_on),
-              ),
+              ), // location info
               ListTile(
                 title: Text(
                   "Email",
                   style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text("gokul@example.com"),
+                subtitle: Text(email.toString()),
                 leading: Icon(Icons.email),
-              ),
+              ), // email
               ListTile(
                 title: Text(
                   "Phone",
@@ -113,15 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 subtitle: Text("09939384849"),
                 leading: Icon(Icons.phone),
-              ),
-              ListTile(
-                title: Text(
-                  "About My Child",
-                  style: TextStyle(color: kSecondaryColor),
-                ),
-                subtitle: Text("This is me"),
-                leading: Icon(Icons.info),
-              ),
+              ), // phone
             ],
           ),
         ),
