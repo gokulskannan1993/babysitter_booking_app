@@ -9,7 +9,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String email;
+  String email, role;
+  bool isParent;
 
   //fire auth instance
   final _auth = FirebaseAuth.instance;
@@ -21,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getCurrentUser();
   }
 
-  //checks for user
+  //checks for logged in user
   void getCurrentUser() async {
     try {
       final user = _auth.currentUser;

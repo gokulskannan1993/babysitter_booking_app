@@ -88,7 +88,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         roleString =
                             value ? "I am a Parent" : "I am a Babysitter";
                       });
-                    }),
+                    }), // isParent
                 SizedBox(
                   height: 24.0,
                 ),
