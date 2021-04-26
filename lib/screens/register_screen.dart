@@ -114,8 +114,15 @@ class _RegisterScreen extends State<RegisterScreen> {
                               .collection("users")
                               .doc(newUser.user.uid)
                               .set({
+                            'name': "Anonymous",
                             'email': email,
-                            'isParent': isParent,
+                            'role': isParent ? "Parent" : "Babysitter",
+                            'about': "Add Detail Here",
+                            'location': "Add Location",
+                            'phone': "Add Phone",
+                            'followers': "0",
+                            "recommends": "0",
+                            "rating": "0"
                           });
 
                           Navigator.pushNamed(context, ProfileScreen.routeName);

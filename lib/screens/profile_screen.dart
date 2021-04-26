@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = "profile_screen";
@@ -9,12 +13,22 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String email, role;
-  bool isParent;
+  String role,
+      username,
+      email,
+      about,
+      phone,
+      location,
+      rating,
+      followers,
+      recommends;
 
+  //instance of firestore
+  final _firestore = FirebaseFirestore.instance;
   //fire auth instance
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
+  DocumentSnapshot userData;
 
   @override
   void initState() {
@@ -28,7 +42,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        email = loggedInUser.email;
+        userData =
+            await _firestore.collection("users").doc(loggedInUser.uid).get();
+        username = userData["name"];
+        role = userData["role"];
+        email = userData["email"];
+        phone = userData["phone"];
+        about = userData["about"];
+        location = userData["location"];
+        followers = userData["followers"];
+        recommends = userData["recommends"];
+        rating = userData["rating"];
       }
     } catch (e) {
       print(e);
@@ -64,11 +88,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 10,
                 ),
                 Text(
-                  "Gokul",
+                  username,
                   style: TextStyle(fontSize: 16, color: kPrimaryColor),
                 ),
                 Text(
-                  "Dublin, Ireland",
+                  role,
                   style: TextStyle(fontSize: 16, color: kTextColorLight),
                 ),
               ],
@@ -87,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       height: 5,
                     ),
-                    Text("9/10"),
+                    Text(rating),
                   ],
                 ),
                 Column(
@@ -96,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       height: 5,
                     ),
-                    Text("111"),
+                    Text(followers),
                   ],
                 ),
                 Column(
@@ -105,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       height: 5,
                     ),
-                    Text("111"),
+                    Text(recommends),
                   ],
                 ),
               ],
@@ -122,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Personal Information",
                   style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text("This is me"),
+                subtitle: Text(about),
                 leading: Icon(Icons.info),
               ), // personal info
               ListTile(
@@ -130,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Location",
                   style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text("806 Howth Road, Dublin 5"),
+                subtitle: Text(location),
                 leading: Icon(Icons.location_on),
               ), // location info
               ListTile(
@@ -138,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Email",
                   style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text(email.toString()),
+                subtitle: Text(email),
                 leading: Icon(Icons.email),
               ), // email
               ListTile(
@@ -146,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Phone",
                   style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text("09939384849"),
+                subtitle: Text(phone),
                 leading: Icon(Icons.phone),
               ), // phone
             ],
