@@ -3,7 +3,7 @@ import 'package:babysitter_booking_app/screens/login_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'widgets/loginregisterationbutton.dart';
+import 'widgets/custom_large_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String routeName = "welcome_screen";
@@ -38,20 +38,24 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
             Hero(
               tag: "loginTag",
-              child: LoginRegisterButton(
+              child: CustomLargeButton(
                 textColor: kPrimaryColor,
                 backgroundColor: kSecondaryColor,
                 btnText: "Login",
-                targetScreen: LoginScreen.routeName,
+                onPressed: () {
+                  Navigator.pushNamed(context, LoginScreen.routeName);
+                },
               ),
             ),
             Hero(
               tag: "registerTag",
-              child: LoginRegisterButton(
+              child: CustomLargeButton(
                 textColor: kPrimaryColor,
                 backgroundColor: kSecondaryColor,
                 btnText: "Register",
-                targetScreen: RegisterScreen.routeName,
+                onPressed: () {
+                  Navigator.pushNamed(context, RegisterScreen.routeName);
+                },
               ),
             ),
           ],

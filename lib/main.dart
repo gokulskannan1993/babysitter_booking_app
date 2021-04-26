@@ -3,6 +3,7 @@ import 'package:babysitter_booking_app/screens/login_screen.dart';
 import 'package:babysitter_booking_app/screens/map_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
+import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class BabysitterBookingApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData.light().copyWith(
           textTheme: TextTheme(
+        bodyText1: TextStyle(color: Colors.black54),
         bodyText2: TextStyle(color: Colors.black54),
       )),
 
@@ -26,6 +28,7 @@ class BabysitterBookingApp extends StatelessWidget {
         HomeScreen.routeName: (context) => HomeScreen(),
         ProfileScreen.routeName: (context) => ProfileScreen(),
         MapScreen.routeName: (context) => MapScreen(),
+        UserScreen.routeName: (context) => UserScreen(),
       },
     );
   }
