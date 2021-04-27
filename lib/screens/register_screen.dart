@@ -19,7 +19,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
 
-  String email, password, confirmPass;
+  String email, password, name, address, phone;
   bool isParent = false;
   bool _saving = false;
   String roleString = "I am a Babysitter";
@@ -63,10 +63,28 @@ class _RegisterScreen extends State<RegisterScreen> {
                   height: 8.0,
                 ),
                 CustomLargeTextField(
-                  hintText: "Confirm Password",
-                  isObscure: true,
+                  hintText: "Enter your Name",
                   onChanged: (value) {
-                    confirmPass = value;
+                    name = value;
+                  },
+                ), // confirm password
+                SizedBox(
+                  height: 24.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter your address",
+                  onChanged: (value) {
+                    address = value;
+                  },
+                ), // confirm password
+                SizedBox(
+                  height: 24.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter your phone number",
+                  inputType: TextInputType.phone,
+                  onChanged: (value) {
+                    address = value;
                   },
                 ), // confirm password
                 SizedBox(
@@ -114,12 +132,12 @@ class _RegisterScreen extends State<RegisterScreen> {
                               .collection("users")
                               .doc(newUser.user.uid)
                               .set({
-                            'name': "Anonymous",
+                            'name': name,
                             'email': email,
                             'role': isParent ? "Parent" : "Babysitter",
                             'about': "Add Detail Here",
-                            'location': "Add Location",
-                            'phone': "Add Phone",
+                            'location': address,
+                            'phone': phone,
                             'followers': "0",
                             "recommends": "0",
                             "rating": "0"
