@@ -1,4 +1,5 @@
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  //for showing the data on the fields
   String role,
       username,
       email,
@@ -51,8 +53,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // so that to eliminate the need of hot reload due to async
         future: _firestore.collection("users").doc(loggedInUser.uid).get(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // if the snapshot is empty
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // if the snapshot is loading
             return Text("Loading...");
           } else {
             //Mapping all the fields
@@ -150,7 +152,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         "Personal Information",
                         style: TextStyle(color: kSecondaryColor),
                       ),
-                      subtitle: Text(about),
                       leading: Icon(Icons.info),
                     ), // personal info
                     ListTile(
@@ -177,6 +178,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       subtitle: Text(phone),
                       leading: Icon(Icons.phone),
                     ), // phone
+                    GestureDetector(
+                      onTap: () {
+                        _auth.signOut();
+                        Navigator.pushNamed(context, WelcomeScreen.routeName);
+                      },
+                      child: ListTile(
+                        title: Text(
+                          "Sign Out",
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        leading: Icon(Icons.logout),
+                      ),
+                    ),
                   ],
                 ),
               ),

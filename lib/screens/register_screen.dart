@@ -69,7 +69,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                   },
                 ), // confirm password
                 SizedBox(
-                  height: 24.0,
+                  height: 8.0,
                 ),
                 CustomLargeTextField(
                   hintText: "Enter your address",
@@ -78,17 +78,17 @@ class _RegisterScreen extends State<RegisterScreen> {
                   },
                 ), // confirm password
                 SizedBox(
-                  height: 24.0,
+                  height: 8.0,
                 ),
                 CustomLargeTextField(
                   hintText: "Enter your phone number",
                   inputType: TextInputType.phone,
                   onChanged: (value) {
-                    address = value;
+                    phone = value;
                   },
                 ), // confirm password
                 SizedBox(
-                  height: 24.0,
+                  height: 8.0,
                 ),
                 SwitchListTile(
                     title: Text(
@@ -140,7 +140,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                             'phone': phone,
                             'followers': "0",
                             "recommends": "0",
-                            "rating": "0"
+                            "rating": "0",
                           });
 
                           Navigator.pushNamed(context, ProfileScreen.routeName);
