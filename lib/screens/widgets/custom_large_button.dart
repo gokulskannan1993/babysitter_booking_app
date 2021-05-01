@@ -5,12 +5,14 @@ class CustomLargeButton extends StatelessWidget {
   final Color textColor, backgroundColor;
   final String btnText;
   final Function onPressed; //event handler function
+  final double minWidth;
   //constructor
   CustomLargeButton(
       {@required this.textColor,
       @required this.backgroundColor,
       @required this.btnText,
-      this.onPressed});
+      this.onPressed,
+      this.minWidth = 200});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class CustomLargeButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
         child: MaterialButton(
           onPressed: onPressed,
-          minWidth: 200.0,
+          minWidth: minWidth,
           height: 42.0,
           child: Text(
             btnText,
