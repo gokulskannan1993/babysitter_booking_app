@@ -62,9 +62,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             username = userData["name"];
             role = userData["role"];
             email = userData["email"];
-            phone = userData["phone"];
             about = userData["about"];
-            location = userData["location"];
+            location = userData["street"] + ", " + userData["county"];
             followers = userData["followers"];
             recommends = userData["recommends"];
             rating = userData["rating"];
@@ -175,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         "Phone",
                         style: TextStyle(color: kSecondaryColor),
                       ),
-                      subtitle: Text(phone),
+                      subtitle: Text("phone"),
                       leading: Icon(Icons.phone),
                     ), // phone
                     GestureDetector(

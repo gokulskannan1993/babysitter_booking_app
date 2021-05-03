@@ -13,7 +13,7 @@ class CustomLargeTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       keyboardType: inputType,
       onChanged: onChanged,
       style: TextStyle(color: kSecondaryColor),

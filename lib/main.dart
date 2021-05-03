@@ -25,7 +25,7 @@ class BabysitterBookingApp extends StatelessWidget {
       )),
 
       //Routing to Different Screens
-      initialRoute: UserScreen.routeName,
+      initialRoute: WelcomeScreen.routeName,
       routes: {
         WelcomeScreen.routeName: (context) => WelcomeScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),

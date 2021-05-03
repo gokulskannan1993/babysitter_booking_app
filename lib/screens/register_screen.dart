@@ -1,3 +1,6 @@
+import 'package:babysitter_booking_app/models/babysitter_model.dart';
+import 'package:babysitter_booking_app/models/parent_model.dart';
+import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
@@ -14,22 +17,34 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
+  //To change state
+  String state = "email";
   //instance for firebase auth
   final _auth = FirebaseAuth.instance;
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
 
-  String email, password, name, address, phone;
+  UserModel user;
+
+  String email,
+      password,
+      name,
+      address,
+      street,
+      county,
+      about,
+      minWage,
+      confirmPassword,
+      phone;
   bool isParent = false;
-  bool _saving = false;
+  bool saving = false;
   String roleString = "I am a Babysitter";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kPrimaryColor,
-      body: ModalProgressHUD(
-        inAsyncCall: _saving,
-        child: Padding(
+    if (state == "email") {
+      return Scaffold(
+        backgroundColor: kPrimaryColor,
+        body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
           child: SingleChildScrollView(
             child: Column(
@@ -62,29 +77,12 @@ class _RegisterScreen extends State<RegisterScreen> {
                 SizedBox(
                   height: 8.0,
                 ),
+
                 CustomLargeTextField(
-                  hintText: "Enter your Name",
-                  onChanged: (value) {
-                    name = value;
-                  },
-                ), // confirm password
-                SizedBox(
-                  height: 8.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your address",
-                  onChanged: (value) {
-                    address = value;
-                  },
-                ), // confirm password
-                SizedBox(
-                  height: 8.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your phone number",
+                  hintText: "Confirm Password",
                   inputType: TextInputType.phone,
                   onChanged: (value) {
-                    phone = value;
+                    confirmPassword = value;
                   },
                 ), // confirm password
                 SizedBox(
@@ -115,51 +113,298 @@ class _RegisterScreen extends State<RegisterScreen> {
                   child: CustomLargeButton(
                     textColor: kPrimaryColor,
                     backgroundColor: kSecondaryColor,
-                    btnText: "Register",
-                    onPressed: () async {
-                      //for the spinner
-                      setState(() {
-                        _saving = true;
-                      });
-                      try {
-                        //creating the new user at auth
-                        final newUser =
-                            await _auth.createUserWithEmailAndPassword(
-                                email: email, password: password);
-                        if (newUser != null) {
-                          //create an entry of the user in the firestore
-                          _firestore
-                              .collection("users")
-                              .doc(newUser.user.uid)
-                              .set({
-                            'name': name,
-                            'email': email,
-                            'role': isParent ? "Parent" : "Babysitter",
-                            'about': "Add Detail Here",
-                            'location': address,
-                            'phone': phone,
-                            'followers': "0",
-                            "recommends": "0",
-                            "rating": "0",
-                          });
-
-                          Navigator.pushNamed(context, ProfileScreen.routeName);
-                        }
-                        //for the spinner
+                    btnText: "Next",
+                    onPressed: () {
+                      if (isParent) {
+                        user = Parent();
+                      } else {
+                        user = Babysitter();
+                      }
+                      if (confirmPassword == password) {
+                        user.email = email;
+                        user.password = password;
                         setState(() {
-                          _saving = false;
+                          state = "details";
                         });
-                      } catch (e) {
-                        print(e);
                       }
                     },
+                    // onPressed: () async {
+                    //   //for the spinner
+                    //   setState(() {
+                    //     saving = true;
+                    //   });
+                    //   try {
+                    //     //creating the new user at auth
+                    //     final newUser =
+                    //         await _auth.createUserWithEmailAndPassword(
+                    //             email: email, password: password);
+                    //     if (newUser != null) {
+                    //       //create an entry of the user in the firestore
+                    //       _firestore
+                    //           .collection("users")
+                    //           .doc(newUser.user.uid)
+                    //           .set({
+                    //         'name': name,
+                    //         'email': email,
+                    //         'role': isParent ? "Parent" : "Babysitter",
+                    //         'about': "Add Detail Here",
+                    //         'location': address,
+                    //         'phone': phone,
+                    //         'followers': "0",
+                    //         "recommends": "0",
+                    //         "rating": "0",
+                    //       });
+                    //
+                    //       Navigator.pushNamed(
+                    //           context, ProfileScreen.routeName);
+                    //     }
+                    //     //for the spinner
+                    //     setState(() {
+                    //       saving = false;
+                    //     });
+                    //   } catch (e) {
+                    //     print(e);
+                    //   }
+                    // },
                   ),
                 ), // Register Button
               ],
             ),
           ),
         ),
-      ),
-    );
+      );
+    } else if (state == "details") {
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Container(
+                  height: 100.0,
+                ),
+                SizedBox(
+                  height: 48.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter your name",
+                  onChanged: (value) {
+                    name = value;
+                  },
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter your Street Address",
+                  onChanged: (value) {
+                    street = value;
+                  },
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter your County",
+                  onChanged: (value) {
+                    county = value;
+                  },
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                CustomLargeTextField(
+                  hintText: "Enter phone number",
+                  onChanged: (value) {
+                    phone = value;
+                  },
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomLargeButton(
+                      minWidth: 150,
+                      textColor: kSecondaryColor,
+                      backgroundColor: kPrimaryColor,
+                      btnText: "Back",
+                      onPressed: () {
+                        setState(() {
+                          state = "email";
+                        });
+                      },
+                    ),
+                    CustomLargeButton(
+                      minWidth: 150,
+                      textColor: kPrimaryColor,
+                      backgroundColor: kSecondaryColor,
+                      btnText: "Next",
+                      onPressed: () {
+                        user.name = name;
+                        user.street = street;
+                        user.county = county;
+                        user.phone = phone;
+                        setState(() {
+                          state = "about";
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return ModalProgressHUD(
+        inAsyncCall: saving,
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 85.0,
+                    ),
+                    Text(
+                      user is Parent ? 'About my child' : "About me",
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: kSecondaryColor),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: TextField(
+                          maxLines: 10,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "Enter your text here"),
+                          style: TextStyle(color: kSecondaryColor),
+                          onChanged: (value) {
+                            setState(() {
+                              about = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    if (user is Babysitter)
+                      CustomLargeTextField(
+                        hintText: "Minimum wage (£)",
+                        onChanged: (value) {
+                          minWage = value;
+                        },
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        CustomLargeButton(
+                          minWidth: 150,
+                          textColor: kSecondaryColor,
+                          backgroundColor: kPrimaryColor,
+                          btnText: "Back",
+                          onPressed: () {
+                            setState(() {
+                              state = "details";
+                            });
+                          },
+                        ),
+                        CustomLargeButton(
+                          minWidth: 150,
+                          textColor: kPrimaryColor,
+                          backgroundColor: kSecondaryColor,
+                          btnText: "Register",
+                          onPressed: () async {
+                            user.about = about;
+
+                            //for the spinner
+                            setState(() {
+                              saving = true;
+                            });
+                            try {
+                              //creating the new user at auth
+                              final newUser =
+                                  await _auth.createUserWithEmailAndPassword(
+                                      email: user.email,
+                                      password: user.password);
+                              if (newUser != null) {
+                                //create an entry of the user in the firestore
+                                user.id = newUser.user.uid;
+
+                                if (user is Parent) {
+                                  _firestore
+                                      .collection("users")
+                                      .doc(user.id)
+                                      .set({
+                                    'name': user.name,
+                                    'email': user.email,
+                                    'role': "Parent",
+                                    'about': user.about,
+                                    'street': user.street,
+                                    'county': user.county,
+                                    'phone': user.phone,
+                                    'followers': "0",
+                                    "recommends": "0",
+                                    "rating": "0",
+                                  });
+                                } else {
+                                  Babysitter bs = user;
+                                  bs.wage = double.parse(minWage);
+                                  _firestore
+                                      .collection("users")
+                                      .doc(bs.id)
+                                      .set({
+                                    'name': bs.name,
+                                    'email': bs.email,
+                                    'role': "Babysitter",
+                                    'about': bs.about,
+                                    'street': bs.street,
+                                    'county': bs.county,
+                                    'phone': bs.phone,
+                                    'wage': bs.wage,
+                                    'followers': "0",
+                                    "recommends": "0",
+                                    "rating": "0",
+                                  });
+                                }
+
+                                Navigator.pushNamed(
+                                    context, ProfileScreen.routeName);
+                              }
+                              //for the spinner
+                              setState(() {
+                                saving = false;
+                              });
+                            } catch (e) {
+                              print(e);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
