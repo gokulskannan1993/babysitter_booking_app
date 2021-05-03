@@ -1,4 +1,3 @@
-import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'constants.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static String routeName = "login_screen";
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       final user = await _auth.signInWithEmailAndPassword(
                           email: email, password: password);
                       if (user != null) {
-                        Navigator.pushNamed(context, ProfileScreen.routeName);
+                        Navigator.pushNamed(context, HomeScreen.routeName);
                       }
                       //for the spinner
                       setState(() {

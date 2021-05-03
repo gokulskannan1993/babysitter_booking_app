@@ -3,7 +3,7 @@ import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart'
 import 'package:flutter/material.dart';
 
 class UserScreen extends StatefulWidget {
-  static String routeName = "home_screen";
+  static String routeName = "user_screen";
   @override
   _UserScreenState createState() => _UserScreenState();
 }
