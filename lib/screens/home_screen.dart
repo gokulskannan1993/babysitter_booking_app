@@ -4,6 +4,7 @@ import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
+import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -72,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   user = Parent();
                 }
+                user.id = loggedInUser.uid;
                 user.name = userData["name"];
                 user.email = userData["email"];
                 user.street = userData["street"];
@@ -196,91 +198,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         else if (state == "default" && user is Parent)
                           Container(
-                            child: Card(
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(
-                                      "Create a Job",
-                                      style: TextStyle(
-                                          color: kSecondaryColor, fontSize: 20),
-                                    ),
-                                  ),
-                                  ListTile(
-                                      title: Text(
-                                        dateString,
-                                        style:
-                                            TextStyle(color: kSecondaryColor),
-                                      ),
-                                      trailing: Icon(Icons.keyboard_arrow_down),
-                                      onTap: () {
-                                        showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime.now(),
-                                                lastDate: DateTime(2022))
-                                            .then((date) {
-                                          setState(() {
-                                            dateString =
-                                                "${date.day}/${date.month}/${date.year}";
-                                          });
-                                        });
-                                      }),
-                                  ListTile(
-                                      title: Text(
-                                        timeFrom,
-                                        style:
-                                            TextStyle(color: kSecondaryColor),
-                                      ),
-                                      trailing: Icon(Icons.keyboard_arrow_down),
-                                      onTap: () {
-                                        showTimePicker(
-                                                context: context,
-                                                initialTime: TimeOfDay.now())
-                                            .then((value) => {
-                                                  setState(() {
-                                                    timeFrom =
-                                                        "${value.hour}:${value.minute}";
-                                                  })
-                                                });
-                                      }),
-                                  ListTile(
-                                      title: Text(
-                                        timeTo,
-                                        style:
-                                            TextStyle(color: kSecondaryColor),
-                                      ),
-                                      trailing: Icon(Icons.keyboard_arrow_down),
-                                      onTap: () {
-                                        showTimePicker(
-                                                context: context,
-                                                initialTime: TimeOfDay.now())
-                                            .then((value) => {
-                                                  setState(() {
-                                                    timeTo =
-                                                        "${value.hour}:${value.minute}";
-                                                  })
-                                                });
-                                      }),
-                                  FloatingActionButton(
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: CustomLargeButton(
                                     backgroundColor: kSecondaryColor,
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.add,
-                                        color: kPrimaryColor,
-                                      ),
-                                    ),
+                                    textColor: kPrimaryColor,
+                                    btnText: "Add Job",
+                                    minWidth: 150,
                                     onPressed: () {
-                                      Job newJob = Job();
-                                      newJob.date = dateString;
-                                      newJob.assignedTo = user.id;
-                                      newJob.from = timeFrom;
-                                      newJob.to = timeTo;
-                                      jobs.add(newJob);
+                                      Navigator.pushNamed(
+                                          context, AddJobScreen.routeName);
                                     },
                                   ),
-                                ],
-                              ),
+                                ),
+                                Card(),
+                              ],
                             ),
                           )
                       ],

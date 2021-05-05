@@ -6,6 +6,7 @@ import 'package:babysitter_booking_app/screens/register_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -34,6 +35,7 @@ class BabysitterBookingApp extends StatelessWidget {
         ProfileScreen.routeName: (context) => ProfileScreen(),
         MapScreen.routeName: (context) => MapScreen(),
         UserScreen.routeName: (context) => UserScreen(),
+        AddJobScreen.routeName: (context) => AddJobScreen(),
       },
     );
   }
