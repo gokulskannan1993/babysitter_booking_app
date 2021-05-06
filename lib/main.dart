@@ -7,6 +7,7 @@ import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:babysitter_booking_app/screens/add_job_screen.dart';
+import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -19,12 +20,6 @@ class BabysitterBookingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light().copyWith(
-          textTheme: TextTheme(
-        bodyText1: TextStyle(color: Colors.black54),
-        bodyText2: TextStyle(color: Colors.black54),
-      )),
-
       //Routing to Different Screens
       initialRoute: WelcomeScreen.routeName,
       routes: {
@@ -36,6 +31,7 @@ class BabysitterBookingApp extends StatelessWidget {
         MapScreen.routeName: (context) => MapScreen(),
         UserScreen.routeName: (context) => UserScreen(),
         AddJobScreen.routeName: (context) => AddJobScreen(),
+        SelectBabysitter.routeName: (context) => SelectBabysitter(),
       },
     );
   }

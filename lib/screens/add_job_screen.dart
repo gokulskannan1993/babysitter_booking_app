@@ -5,6 +5,8 @@ import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.da
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'package:intl/intl.dart';
 
 import 'constants.dart';
 
@@ -22,7 +24,10 @@ class _AddJobState extends State<AddJobScreen> {
 
   User loggedInUser;
 
-  String dateString = "Select Date", timeFrom = "Time From", timeTo = "Time To";
+  String dateString = "Select Date",
+      timeFrom = "Select time from",
+      timeTo = "Select time To";
+  int maxWage = 10;
 
   void initState() {
     super.initState();
@@ -57,7 +62,7 @@ class _AddJobState extends State<AddJobScreen> {
               ListTile(
                 title: Text(
                   "Create a Job",
-                  style: TextStyle(color: kSecondaryColor, fontSize: 20),
+                  style: TextStyle(color: kSecondaryColor, fontSize: 30),
                 ),
               ),
               ListTile(
@@ -66,6 +71,10 @@ class _AddJobState extends State<AddJobScreen> {
                     style: TextStyle(color: kSecondaryColor),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_down),
+                  subtitle: Text(
+                    "On",
+                    style: TextStyle(color: kSecondaryColor),
+                  ),
                   onTap: () {
                     showDatePicker(
                             context: context,
@@ -74,7 +83,8 @@ class _AddJobState extends State<AddJobScreen> {
                             lastDate: DateTime(2022))
                         .then((date) {
                       setState(() {
-                        dateString = "${date.day}/${date.month}/${date.year}";
+                        final DateFormat formatter = DateFormat('d MMMM, yyyy');
+                        dateString = formatter.format(date);
                       });
                     });
                   }),
@@ -84,12 +94,16 @@ class _AddJobState extends State<AddJobScreen> {
                     style: TextStyle(color: kSecondaryColor),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_down),
+                  subtitle: Text(
+                    "From",
+                    style: TextStyle(color: kSecondaryColor),
+                  ),
                   onTap: () {
                     showTimePicker(
                             context: context, initialTime: TimeOfDay.now())
                         .then((value) => {
                               setState(() {
-                                timeFrom = "${value.hour}:${value.minute}";
+                                timeFrom = value.format(context);
                               })
                             });
                   }),
@@ -98,16 +112,39 @@ class _AddJobState extends State<AddJobScreen> {
                     timeTo,
                     style: TextStyle(color: kSecondaryColor),
                   ),
+                  subtitle: Text(
+                    "To",
+                    style: TextStyle(color: kSecondaryColor),
+                  ),
                   trailing: Icon(Icons.keyboard_arrow_down),
                   onTap: () {
                     showTimePicker(
                             context: context, initialTime: TimeOfDay.now())
                         .then((value) => {
                               setState(() {
-                                timeTo = "${value.hour}:${value.minute}";
+                                timeTo = value.format(context);
                               })
                             });
                   }),
+              ListTile(
+                title: Text(
+                  "Select Maximum wage per hour (£)",
+                  style: TextStyle(color: kSecondaryColor, fontSize: 20),
+                ),
+              ),
+              NumberPicker(
+                  axis: Axis.horizontal,
+                  minValue: 10,
+                  maxValue: 100,
+                  value: maxWage,
+                  onChanged: (value) {
+                    setState(() {
+                      maxWage = value;
+                    });
+                  }),
+              SizedBox(
+                height: 30,
+              ),
               FloatingActionButton(
                 backgroundColor: kSecondaryColor,
                 child: IconButton(
@@ -122,6 +159,7 @@ class _AddJobState extends State<AddJobScreen> {
                   newJob.creator = loggedInUser.uid;
                   newJob.from = timeFrom;
                   newJob.to = timeTo;
+                  newJob.maxWage = maxWage;
 
                   _firestore.collection("jobs").add({
                     "date": newJob.date,
@@ -129,7 +167,10 @@ class _AddJobState extends State<AddJobScreen> {
                     "from": newJob.from,
                     "to": newJob.to,
                     "assignedTo": newJob.assignedTo,
-                    "status": newJob.status
+                    "status": newJob.status,
+                    "maxWage": newJob.maxWage,
+                    "askedTo": newJob.askedTo,
+                    "askedBy": newJob.askedBy
                   });
                   setState(() {
                     Navigator.pop(context);

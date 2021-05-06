@@ -67,16 +67,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Stack(children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
-                      "https://st3.depositphotos.com/15648834/17930/v/1600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"),
+                  backgroundImage: NetworkImage(user.profileImage),
                 ),
                 Positioned(
                     bottom: 3,
                     right: 2,
-                    child: CircleAvatar(
-                        backgroundColor: kPrimaryColor,
-                        radius: 15,
-                        child: (Icon(Icons.edit)))),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: CircleAvatar(
+                          backgroundColor: kPrimaryColor,
+                          radius: 15,
+                          child: (Icon(Icons.edit))),
+                    )),
               ]),
               SizedBox(
                 height: 10,
