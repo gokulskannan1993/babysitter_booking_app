@@ -57,57 +57,93 @@ class _SelectBabysitter extends State<SelectBabysitter> {
             stream: _firestore
                 .collection("users")
                 .where("role", isEqualTo: "Babysitter")
-                .where("wage", isLessThanOrEqualTo: data["maxWage"])
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<Card> sitterList = [];
                 final sitters = snapshot.data.docs;
                 for (var sitter in sitters) {
-                  final sitterCard = Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, UserScreen.routeName);
-                            },
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage:
-                                  NetworkImage(sitter.data()["imageUrl"]),
+                  if (sitter.data()["wage"] <= data["maxWage"]) {
+                    final sitterCard = Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              width: 20,
                             ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "${sitter.data()["name"]}",
-                                style: TextStyle(fontSize: 15),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, UserScreen.routeName,
+                                    arguments: {
+                                      "userid": sitter.id,
+                                      "name": sitter.data()["name"],
+                                      "about": sitter.data()["about"],
+                                      "county": sitter.data()["county"],
+                                      "rating": sitter.data()["rating"],
+                                      "followers": sitter.data()["followers"],
+                                      "recommends": sitter.data()["recommends"],
+                                      "imageUrl": sitter.data()["imageUrl"],
+                                      "role": sitter.data()["role"]
+                                    });
+                              },
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    NetworkImage(sitter.data()["imageUrl"]),
                               ),
-                              Text(
-                                "Rating: ${sitter.data()["rating"]}",
-                                style: TextStyle(fontSize: 10),
-                              ),
-                              Text(
-                                "Cost: ${sitter.data()["wage"]}",
-                                style: TextStyle(fontSize: 10),
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "${sitter.data()["name"]}",
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "Rating: ${sitter.data()["rating"]}/10",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "Cost: £${sitter.data()["wage"]} per hour",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            CustomLargeButton(
+                              textColor: kPrimaryColor,
+                              backgroundColor: kSecondaryColor,
+                              btnText: "Ask",
+                              minWidth: 100,
+                              onPressed: () {
+                                _firestore
+                                    .collection("jobs")
+                                    .doc(data["jobID"])
+                                    .update({
+                                  "askedTo": sitter.id,
+                                });
+                                Navigator.pop(context);
+                              },
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                  sitterList.add(sitterCard);
+                    );
+                    sitterList.add(sitterCard);
+                  }
                 }
                 return Container(
                   padding: EdgeInsets.all(20),

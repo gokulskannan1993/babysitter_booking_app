@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
+import 'package:numberpicker/numberpicker.dart';
 
 class RegisterScreen extends StatefulWidget {
   static String routeName = "register_screen";
@@ -34,9 +35,9 @@ class _RegisterScreen extends State<RegisterScreen> {
       street,
       county,
       about,
-      minWage,
       confirmPassword,
       phone;
+  int minWage = 10;
   bool isParent = false;
   bool saving = false;
   String roleString = "I am a Babysitter";
@@ -306,12 +307,23 @@ class _RegisterScreen extends State<RegisterScreen> {
                       height: 24.0,
                     ),
                     if (user is Babysitter)
-                      CustomLargeTextField(
-                        hintText: "Minimum wage (£)",
-                        onChanged: (value) {
-                          minWage = value;
-                        },
+                      ListTile(
+                        title: Text(
+                          "Select Minimum wage per hour (£)",
+                          style:
+                              TextStyle(color: kSecondaryColor, fontSize: 20),
+                        ),
                       ),
+                    NumberPicker(
+                        axis: Axis.horizontal,
+                        minValue: 10,
+                        maxValue: 100,
+                        value: minWage,
+                        onChanged: (value) {
+                          setState(() {
+                            minWage = value;
+                          });
+                        }),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -360,13 +372,14 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'street': user.street,
                                     'county': user.county,
                                     'phone': user.phone,
+                                    'imageUrl': user.profileImage,
                                     'followers': "0",
                                     "recommends": "0",
                                     "rating": "0",
                                   });
                                 } else {
                                   Babysitter bs = user;
-                                  bs.wage = double.parse(minWage);
+                                  bs.wage = minWage;
                                   _firestore
                                       .collection("users")
                                       .doc(bs.id)
@@ -379,6 +392,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'county': bs.county,
                                     'phone': bs.phone,
                                     'wage': bs.wage,
+                                    'imageUrl': user.profileImage,
                                     'followers': "0",
                                     "recommends": "0",
                                     "rating": "0",

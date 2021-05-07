@@ -43,6 +43,7 @@ dependencies:
   numberpicker: ^2.1.1
   image_picker: ^0.7.4
   firebase_storage: ^8.0.5
+  permission_handler: ^7.1.0
 
 
 

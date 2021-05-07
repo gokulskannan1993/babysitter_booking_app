@@ -9,8 +9,12 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
+  Map data = {};
+
   @override
   Widget build(BuildContext context) {
+    data = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -32,18 +36,17 @@ class _UserScreenState extends State<UserScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(
-                            "https://st3.depositphotos.com/15648834/17930/v/1600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"),
+                        backgroundImage: NetworkImage(data["imageUrl"]),
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        "Gokul",
+                        data["name"],
                         style: TextStyle(fontSize: 16, color: kSecondaryColor),
                       ),
                       Text(
-                        "World",
+                        data["county"],
                         style: TextStyle(fontSize: 16, color: kMediumDarkText),
                       ),
                     ],
@@ -64,7 +67,7 @@ class _UserScreenState extends State<UserScreen> {
                       SizedBox(
                         height: 5,
                       ),
-                      Text("10"),
+                      Text(data["rating"]),
                     ],
                   ),
                   Column(
@@ -73,18 +76,19 @@ class _UserScreenState extends State<UserScreen> {
                       SizedBox(
                         height: 5,
                       ),
-                      Text("100"),
+                      Text(data["followers"]),
                     ],
                   ),
-                  Column(
-                    children: [
-                      Text("Recommends"),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text("1"),
-                    ],
-                  ),
+                  if (data["role"] == "Babysitter")
+                    Column(
+                      children: [
+                        Text("Favorites"),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(data["recommends"]),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -97,7 +101,7 @@ class _UserScreenState extends State<UserScreen> {
                 CustomLargeButton(
                   textColor: kPrimaryColor,
                   backgroundColor: kSecondaryColor,
-                  btnText: "Book",
+                  btnText: "Add to favorites",
                   minWidth: 150,
                 ),
                 CustomLargeButton(
@@ -128,7 +132,7 @@ class _UserScreenState extends State<UserScreen> {
                   height: 16,
                 ),
                 Text(
-                  "This is the about section. This is just jibberish Text",
+                  data["about"],
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.normal,

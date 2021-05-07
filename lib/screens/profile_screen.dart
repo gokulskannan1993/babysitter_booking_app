@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:babysitter_booking_app/models/babysitter_model.dart';
 import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = "profile_screen";
@@ -30,6 +35,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
+
+  //instance of storage
+  final _storage = FirebaseStorage.instance;
   //fire auth instance
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
@@ -38,6 +46,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
+  }
+
+  uploadImage() async {
+    final picker = ImagePicker();
+
+    PickedFile image;
+
+    //select image
+    image = await picker.getImage(source: ImageSource.gallery);
+
+    var file = File(image.path);
+
+    if (image != null) {
+      // upload the image to firebase
+      var snapshot = await _storage.ref().child(image.path).putFile(file);
+      String url = await snapshot.ref.getDownloadURL();
+      _firestore.collection("users").doc(user.id).update({
+        "imageUrl": url,
+      });
+      setState(() {
+        user.profileImage = url;
+      });
+    } else {
+      print("No path");
+    }
   }
 
   //checks for logged in user
@@ -56,6 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     data = ModalRoute.of(context).settings.arguments;
     user = data['user'];
+
     return Scaffold(
         body: ListView(children: [
       Container(
@@ -65,20 +99,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Stack(children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(user.profileImage),
+                GestureDetector(
+                  onTap: () {
+                    uploadImage();
+                  },
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(user.profileImage),
+                  ),
                 ),
-                Positioned(
-                    bottom: 3,
-                    right: 2,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: CircleAvatar(
-                          backgroundColor: kPrimaryColor,
-                          radius: 15,
-                          child: (Icon(Icons.edit))),
-                    )),
               ]),
               SizedBox(
                 height: 10,

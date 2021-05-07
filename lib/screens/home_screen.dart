@@ -258,7 +258,17 @@ class CardForJobs extends StatelessWidget {
                                 onTap: () {
                                   Navigator.pushNamed(
                                       context, UserScreen.routeName,
-                                      arguments: {"userid": snapshot.data.id});
+                                      arguments: {
+                                        "userid": snapshot.data.id,
+                                        "name": userData["name"],
+                                        "about": userData["about"],
+                                        "county": userData["county"],
+                                        "rating": userData["rating"],
+                                        "followers": userData["followers"],
+                                        "recommends": userData["recommends"],
+                                        "imageUrl": userData["imageUrl"],
+                                        "role": userData["role"]
+                                      });
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -308,7 +318,18 @@ class CardForJobs extends StatelessWidget {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, UserScreen.routeName);
+                                        context, UserScreen.routeName,
+                                        arguments: {
+                                          "userid": snapshot.data.id,
+                                          "name": userData["name"],
+                                          "about": userData["about"],
+                                          "county": userData["county"],
+                                          "rating": userData["rating"],
+                                          "followers": userData["followers"],
+                                          "recommends": userData["recommends"],
+                                          "imageUrl": userData["imageUrl"],
+                                          "role": userData["role"]
+                                        });
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -361,7 +382,18 @@ class CardForJobs extends StatelessWidget {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, UserScreen.routeName);
+                                        context, UserScreen.routeName,
+                                        arguments: {
+                                          "userid": snapshot.data.id,
+                                          "name": userData["name"],
+                                          "about": userData["about"],
+                                          "county": userData["county"],
+                                          "rating": userData["rating"],
+                                          "followers": userData["followers"],
+                                          "recommends": userData["recommends"],
+                                          "imageUrl": userData["imageUrl"],
+                                          "role": userData["role"]
+                                        });
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -414,7 +446,18 @@ class CardForJobs extends StatelessWidget {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, UserScreen.routeName);
+                                        context, UserScreen.routeName,
+                                        arguments: {
+                                          "userid": snapshot.data.id,
+                                          "name": userData["name"],
+                                          "about": userData["about"],
+                                          "county": userData["county"],
+                                          "rating": userData["rating"],
+                                          "followers": userData["followers"],
+                                          "recommends": userData["recommends"],
+                                          "imageUrl": userData["imageUrl"],
+                                          "role": userData["role"]
+                                        });
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
