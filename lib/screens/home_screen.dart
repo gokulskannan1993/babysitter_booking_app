@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: CustomLargeButton(
                                     backgroundColor: kSecondaryColor,
                                     textColor: kPrimaryColor,
-                                    btnText: "Add Job",
+                                    btnText: "+ Create Job",
                                     minWidth: 150,
                                     onPressed: () {
                                       Navigator.pushNamed(

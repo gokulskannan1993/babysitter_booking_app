@@ -38,9 +38,9 @@ class _RegisterScreen extends State<RegisterScreen> {
       confirmPassword,
       phone;
   int minWage = 10;
-  bool isParent = false;
   bool saving = false;
   String roleString = "I am a Babysitter";
+  String userType = "Parent";
   @override
   Widget build(BuildContext context) {
     if (state == "email") {
@@ -90,23 +90,42 @@ class _RegisterScreen extends State<RegisterScreen> {
                 SizedBox(
                   height: 8.0,
                 ),
-                SwitchListTile(
-                    title: Text(
-                      roleString,
-                      style: TextStyle(
-                        color: kMediumDarkText,
-                      ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomLargeButton(
+                      backgroundColor: userType == "Parent"
+                          ? kSecondaryColor
+                          : kPrimaryColor,
+                      textColor: userType == "Parent"
+                          ? kPrimaryColor
+                          : kSecondaryColor,
+                      minWidth: 150,
+                      btnText: "I am a Parent",
+                      onPressed: () {
+                        setState(() {
+                          userType = "Parent";
+                        });
+                      },
                     ),
-                    activeColor: kSecondaryColor,
-                    inactiveThumbColor: kSecondaryColor,
-                    value: isParent,
-                    onChanged: (bool value) {
-                      setState(() {
-                        isParent = value;
-                        roleString =
-                            value ? "I am a Parent" : "I am a Babysitter";
-                      });
-                    }), // isParent
+                    CustomLargeButton(
+                      backgroundColor: userType == "Babysitter"
+                          ? kSecondaryColor
+                          : kPrimaryColor,
+                      textColor: userType == "Babysitter"
+                          ? kPrimaryColor
+                          : kSecondaryColor,
+                      minWidth: 150,
+                      btnText: "I am a Babysitter",
+                      onPressed: () {
+                        setState(() {
+                          userType = "Babysitter";
+                        });
+                      },
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 24.0,
                 ),
@@ -117,7 +136,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                     backgroundColor: kSecondaryColor,
                     btnText: "Next",
                     onPressed: () {
-                      if (isParent) {
+                      if (userType == "Parent") {
                         user = Parent();
                       } else {
                         user = Babysitter();
@@ -130,44 +149,6 @@ class _RegisterScreen extends State<RegisterScreen> {
                         });
                       }
                     },
-                    // onPressed: () async {
-                    //   //for the spinner
-                    //   setState(() {
-                    //     saving = true;
-                    //   });
-                    //   try {
-                    //     //creating the new user at auth
-                    //     final newUser =
-                    //         await _auth.createUserWithEmailAndPassword(
-                    //             email: email, password: password);
-                    //     if (newUser != null) {
-                    //       //create an entry of the user in the firestore
-                    //       _firestore
-                    //           .collection("users")
-                    //           .doc(newUser.user.uid)
-                    //           .set({
-                    //         'name': name,
-                    //         'email': email,
-                    //         'role': isParent ? "Parent" : "Babysitter",
-                    //         'about': "Add Detail Here",
-                    //         'location': address,
-                    //         'phone': phone,
-                    //         'followers': "0",
-                    //         "recommends": "0",
-                    //         "rating": "0",
-                    //       });
-                    //
-                    //       Navigator.pushNamed(
-                    //           context, ProfileScreen.routeName);
-                    //     }
-                    //     //for the spinner
-                    //     setState(() {
-                    //       saving = false;
-                    //     });
-                    //   } catch (e) {
-                    //     print(e);
-                    //   }
-                    // },
                   ),
                 ), // Register Button
               ],

@@ -4,6 +4,7 @@ import 'package:babysitter_booking_app/models/babysitter_model.dart';
 import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/profile_edit_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -91,142 +92,163 @@ class _ProfileScreenState extends State<ProfileScreen> {
     user = data['user'];
 
     return Scaffold(
+        appBar: AppBar(
+          leading: BackButton(
+            color: kSecondaryColor,
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
         body: ListView(children: [
-      Container(
-        height: MediaQuery.of(context).size.height * 0.25,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Stack(children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.25,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Stack(children: [
+                    GestureDetector(
+                      onTap: () {
+                        uploadImage();
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(user.profileImage),
+                      ),
+                    ),
+                  ]),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    user.name,
+                    style: TextStyle(fontSize: 16, color: kSecondaryColor),
+                  ),
+                  Text(
+                    role = user is Parent ? "Parent" : "Babysitter",
+                    style: TextStyle(fontSize: 16, color: kMediumDarkText),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Text("User Rating"),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(user.rating),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Followers"),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(user.followers),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Recommends"),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(user.recommends),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            child: Column(
+              children: [
                 GestureDetector(
                   onTap: () {
-                    uploadImage();
+                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
+                        arguments: {"user": user, "state": "personalInfo"});
                   },
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user.profileImage),
+                  child: ListTile(
+                    title: Text(
+                      "Personal Information",
+                      style: TextStyle(color: kSecondaryColor),
+                    ),
+                    leading: Icon(Icons.info),
+                  ),
+                ), // personal info
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
+                        arguments: {"user": user, "state": "address"});
+                  },
+                  child: ListTile(
+                    title: Text(
+                      "Address",
+                      style: TextStyle(color: kSecondaryColor),
+                    ),
+                    subtitle: Text(user.street + ", " + user.county),
+                    leading: Icon(Icons.location_on),
+                  ),
+                ), // location info
+                GestureDetector(
+                  child: ListTile(
+                    title: Text(
+                      "Email",
+                      style: TextStyle(color: kSecondaryColor),
+                    ),
+                    subtitle: Text(user.email),
+                    leading: Icon(Icons.email),
+                  ),
+                ), // email
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
+                        arguments: {"user": user, "state": "phone"});
+                  },
+                  child: ListTile(
+                    title: Text(
+                      "Phone",
+                      style: TextStyle(color: kSecondaryColor),
+                    ),
+                    subtitle: Text(user.phone),
+                    leading: Icon(Icons.phone),
                   ),
                 ),
-              ]),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                user.name,
-                style: TextStyle(fontSize: 16, color: kSecondaryColor),
-              ),
-              Text(
-                role = user is Parent ? "Parent" : "Babysitter",
-                style: TextStyle(fontSize: 16, color: kMediumDarkText),
-              ),
-            ],
-          ),
-        ),
-      ),
-      Card(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  Text("User Rating"),
-                  SizedBox(
-                    height: 5,
+                if (user is Babysitter)
+                  GestureDetector(
+                    child: ListTile(
+                      title: Text(
+                        "Availability",
+                        style: TextStyle(color: kSecondaryColor),
+                      ),
+                      leading: Icon(Icons.settings),
+                    ),
+                  ), // phone
+                GestureDetector(
+                  onTap: () {
+                    _auth.signOut();
+                    Navigator.pushNamed(context, WelcomeScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text(
+                      "Sign Out",
+                      style: TextStyle(color: kSecondaryColor),
+                    ),
+                    leading: Icon(Icons.logout),
                   ),
-                  Text(user.rating),
-                ],
-              ),
-              Column(
-                children: [
-                  Text("Followers"),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(user.followers),
-                ],
-              ),
-              Column(
-                children: [
-                  Text("Recommends"),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(user.recommends),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      Container(
-        child: Column(
-          children: [
-            ListTile(
-              title: Text(
-                "Personal Information",
-                style: TextStyle(color: kSecondaryColor),
-              ),
-              leading: Icon(Icons.info),
-            ), // personal info
-            GestureDetector(
-              child: ListTile(
-                title: Text(
-                  "Location",
-                  style: TextStyle(color: kSecondaryColor),
                 ),
-                subtitle: Text(user.street + ", " + user.county),
-                leading: Icon(Icons.location_on),
-              ),
-            ), // location info
-            GestureDetector(
-              child: ListTile(
-                title: Text(
-                  "Email",
-                  style: TextStyle(color: kSecondaryColor),
-                ),
-                subtitle: Text(user.email),
-                leading: Icon(Icons.email),
-              ),
-            ), // email
-            GestureDetector(
-              child: ListTile(
-                title: Text(
-                  "Phone",
-                  style: TextStyle(color: kSecondaryColor),
-                ),
-                subtitle: Text(user.phone),
-                leading: Icon(Icons.phone),
-              ),
+              ],
             ),
-            if (user is Babysitter)
-              GestureDetector(
-                child: ListTile(
-                  title: Text(
-                    "Availability",
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  leading: Icon(Icons.settings),
-                ),
-              ), // phone
-            GestureDetector(
-              onTap: () {
-                _auth.signOut();
-                Navigator.pushNamed(context, WelcomeScreen.routeName);
-              },
-              child: ListTile(
-                title: Text(
-                  "Sign Out",
-                  style: TextStyle(color: kSecondaryColor),
-                ),
-                leading: Icon(Icons.logout),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ]));
+          ),
+        ]));
   }
 }
