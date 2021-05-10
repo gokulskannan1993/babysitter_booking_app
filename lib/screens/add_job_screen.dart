@@ -169,8 +169,8 @@ class _AddJobState extends State<AddJobScreen> {
                     "assignedTo": newJob.assignedTo,
                     "status": newJob.status,
                     "maxWage": newJob.maxWage,
-                    "askedTo": newJob.askedTo,
-                    "askedBy": newJob.askedBy
+                    "askedTo": [],
+                    "askedBy": [],
                   });
                   setState(() {
                     Navigator.pop(context);
