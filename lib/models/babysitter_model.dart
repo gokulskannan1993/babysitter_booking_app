@@ -10,6 +10,6 @@ class Babysitter extends UserModel {
   Babysitter() : super() {
     this.wage = 0;
     this.jobs = [];
-    List appliedJobs = [];
+    this.appliedJobs = [];
   }
 }

@@ -1,8 +1,6 @@
-import 'package:babysitter_booking_app/models/jobs_model.dart';
 import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
-import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
@@ -10,8 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:numberpicker/numberpicker.dart';
-import 'package:intl/intl.dart';
 
 import 'constants.dart';
 

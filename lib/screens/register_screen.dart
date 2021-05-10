@@ -3,7 +3,6 @@ import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/home_screen.dart';
-import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
 import 'package:flutter/material.dart';
