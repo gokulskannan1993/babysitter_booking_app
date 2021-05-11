@@ -12,10 +12,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../models/jobs_model.dart';
-import 'package:intl/intl.dart';
+
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //fire auth instance
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
-  String state = 'default', browseState = "jobs";
+  String state = 'default', homestate = "default";
 
   UserModel user;
 
@@ -52,6 +50,39 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<String> createMessageInput(BuildContext context) {
+    String message = "Hi I would like to apply for this job";
+    TextEditingController tController = TextEditingController();
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Your Message ?"),
+            content: TextField(
+              controller: tController,
+            ),
+            actions: [
+              CustomLargeButton(
+                textColor: kPrimaryColor,
+                backgroundColor: kSecondaryColor,
+                btnText: "Apply",
+                minWidth: 100,
+                onPressed: () {
+                  setState(() {
+                    state = "browse";
+                  });
+                  Navigator.pop(
+                      context,
+                      tController.text.toString() == ""
+                          ? message
+                          : tController.text.toString());
+                },
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -163,10 +194,298 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (state == "default" && user is Babysitter)
                           Column(
                             children: [
-                              CalenderForBabySitter(controller: _controller),
-                              SizedBox(
-                                height: 20,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  CustomLargeButton(
+                                    textColor: homestate == "default"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    backgroundColor: homestate == "default"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    btnText: "Calender",
+                                    minWidth: 100,
+                                    onPressed: () {
+                                      setState(() {
+                                        homestate = "default";
+                                      });
+                                    },
+                                  ),
+                                  CustomLargeButton(
+                                    textColor: homestate == "upcoming"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    backgroundColor: homestate == "upcoming"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    btnText: "Upcoming Jobs",
+                                    minWidth: 100,
+                                    onPressed: () {
+                                      setState(() {
+                                        homestate = "upcoming";
+                                      });
+                                    },
+                                  ),
+                                  CustomLargeButton(
+                                    textColor: homestate == "applied"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    backgroundColor: homestate == "applied"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    btnText: "Applied Jobs",
+                                    minWidth: 100,
+                                    onPressed: () {
+                                      setState(() {
+                                        homestate = "applied";
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
+                              if (homestate == "default")
+                                Column(
+                                  children: [
+                                    CalenderForBabySitter(
+                                        controller: _controller),
+                                  ],
+                                )
+                              else if (homestate == "upcoming")
+                                Column(
+                                  children: [
+                                    if (List.from(userData["assignedJobs"])
+                                        .isEmpty)
+                                      Text(
+                                        "No Jobs Assigned",
+                                        style:
+                                            TextStyle(color: kSecondaryColor),
+                                      )
+                                    else
+                                      for (var jobId
+                                          in userData["assignedJobs"])
+                                        Text(
+                                          jobId,
+                                          style:
+                                              TextStyle(color: kSecondaryColor),
+                                        )
+                                  ],
+                                )
+                              else if (homestate == "applied")
+                                Column(
+                                  children: [
+                                    if (List.from(userData["appliedJobs"])
+                                        .isNotEmpty)
+                                      for (var jobId in userData["appliedJobs"])
+                                        FutureBuilder(
+                                            future: _firestore
+                                                .collection("jobs")
+                                                .doc(jobId)
+                                                .get(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                // if the snapshot is loading
+                                                return Text("Loading...");
+                                              } else {
+                                                Map<String, dynamic> job =
+                                                    snapshot.data.data();
+
+                                                return Card(
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        border: Border.all(
+                                                            color:
+                                                                kSecondaryColor)),
+                                                    child: Column(
+                                                      children: [
+                                                        FutureBuilder(
+                                                          future: _firestore
+                                                              .collection(
+                                                                  "users")
+                                                              .doc(job[
+                                                                  "creator"])
+                                                              .get(),
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .waiting) {
+                                                              return Text(
+                                                                  "Loading...");
+                                                            } else {
+                                                              Map<String,
+                                                                      dynamic>
+                                                                  userData =
+                                                                  snapshot.data
+                                                                      .data();
+                                                              return Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            20),
+                                                                child:
+                                                                    GestureDetector(
+                                                                  onTap: () {
+                                                                    Navigator.pushNamed(
+                                                                        context,
+                                                                        UserScreen
+                                                                            .routeName,
+                                                                        arguments: {
+                                                                          "userid": snapshot
+                                                                              .data
+                                                                              .id,
+                                                                          "name":
+                                                                              userData["name"],
+                                                                          "about":
+                                                                              userData["about"],
+                                                                          "county":
+                                                                              userData["county"],
+                                                                          "rating":
+                                                                              userData["rating"],
+                                                                          "followers":
+                                                                              userData["followers"],
+                                                                          "recommends":
+                                                                              userData["recommends"],
+                                                                          "imageUrl":
+                                                                              userData["imageUrl"],
+                                                                          "role":
+                                                                              userData["role"]
+                                                                        });
+                                                                  },
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      CircleAvatar(
+                                                                        radius:
+                                                                            30,
+                                                                        backgroundImage:
+                                                                            NetworkImage(userData["imageUrl"]),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            10,
+                                                                      ),
+                                                                      Column(
+                                                                        children: [
+                                                                          Text(
+                                                                            "${userData["name"]}",
+                                                                            style:
+                                                                                TextStyle(fontSize: 15),
+                                                                          ),
+                                                                          Text(
+                                                                            "Created by",
+                                                                            style:
+                                                                                TextStyle(fontSize: 10),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                        ListTile(
+                                                          title: Text(
+                                                            job["date"],
+                                                            style: TextStyle(
+                                                                color:
+                                                                    kSecondaryColor),
+                                                          ),
+                                                          subtitle: Text(
+                                                            "From ${job["from"]} to ${job["to"]}",
+                                                            style: TextStyle(
+                                                                color:
+                                                                    kSecondaryColor),
+                                                          ),
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          children: [
+                                                            CustomLargeButton(
+                                                              textColor:
+                                                                  kPrimaryColor,
+                                                              backgroundColor:
+                                                                  kSecondaryColor,
+                                                              btnText: "Delete",
+                                                              minWidth: 150,
+                                                              onPressed: () {
+                                                                List
+                                                                    appliedJobs =
+                                                                    List.from(
+                                                                        userData[
+                                                                            "appliedJobs"]);
+                                                                List askedBy =
+                                                                    List.from(job[
+                                                                        "askedBy"]);
+
+                                                                for (int i = 0;
+                                                                    i <
+                                                                        askedBy
+                                                                            .length;
+                                                                    i++) {
+                                                                  if (askedBy[i]
+                                                                          [
+                                                                          "user"] ==
+                                                                      user.id) {
+                                                                    askedBy
+                                                                        .removeAt(
+                                                                            i);
+                                                                  }
+                                                                }
+                                                                appliedJobs
+                                                                    .remove(
+                                                                        jobId);
+                                                                _firestore
+                                                                    .collection(
+                                                                        "jobs")
+                                                                    .doc(jobId)
+                                                                    .update({
+                                                                  "askedBy":
+                                                                      askedBy
+                                                                });
+                                                                _firestore
+                                                                    .collection(
+                                                                        "users")
+                                                                    .doc(
+                                                                        user.id)
+                                                                    .update({
+                                                                  "appliedJobs":
+                                                                      appliedJobs
+                                                                });
+                                                                setState(() {
+                                                                  homestate =
+                                                                      "applied";
+                                                                });
+                                                              },
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            })
+                                    else
+                                      Text(
+                                        "No Jobs Applied",
+                                        style:
+                                            TextStyle(color: kSecondaryColor),
+                                      )
+                                  ],
+                                )
                             ],
                           )
                         else if (state == "default" && user is Parent)
@@ -200,8 +519,167 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Card> joblist = [];
                                     final jobs = snapshot.data.docs;
                                     for (var job in jobs) {
-                                      final jobCard = Card();
-                                      joblist.add(jobCard);
+                                      List jobsApplied =
+                                          List.from(job.data()["askedBy"]);
+                                      List userApplied =
+                                          List.from(userData["appliedJobs"]);
+                                      if (!userApplied.contains(job.id)) {
+                                        final jobCard = Card(
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                        color:
+                                                            kSecondaryColor)),
+                                                child: Column(children: [
+                                                  FutureBuilder(
+                                                    future: _firestore
+                                                        .collection("users")
+                                                        .doc(job
+                                                            .data()["creator"])
+                                                        .get(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .waiting) {
+                                                        return Text(
+                                                            "Loading...");
+                                                      } else {
+                                                        Map<String, dynamic>
+                                                            userData = snapshot
+                                                                .data
+                                                                .data();
+                                                        return Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  20),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.pushNamed(
+                                                                  context,
+                                                                  UserScreen
+                                                                      .routeName,
+                                                                  arguments: {
+                                                                    "userid":
+                                                                        snapshot
+                                                                            .data
+                                                                            .id,
+                                                                    "name": userData[
+                                                                        "name"],
+                                                                    "about":
+                                                                        userData[
+                                                                            "about"],
+                                                                    "county":
+                                                                        userData[
+                                                                            "county"],
+                                                                    "rating":
+                                                                        userData[
+                                                                            "rating"],
+                                                                    "followers":
+                                                                        userData[
+                                                                            "followers"],
+                                                                    "recommends":
+                                                                        userData[
+                                                                            "recommends"],
+                                                                    "imageUrl":
+                                                                        userData[
+                                                                            "imageUrl"],
+                                                                    "role":
+                                                                        userData[
+                                                                            "role"]
+                                                                  });
+                                                            },
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                CircleAvatar(
+                                                                  radius: 30,
+                                                                  backgroundImage:
+                                                                      NetworkImage(
+                                                                          userData[
+                                                                              "imageUrl"]),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Column(
+                                                                  children: [
+                                                                    Text(
+                                                                      "${userData["name"]}",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              15),
+                                                                    ),
+                                                                    Text(
+                                                                      "Created by",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              10),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                CustomLargeButton(
+                                                                  textColor:
+                                                                      kPrimaryColor,
+                                                                  backgroundColor:
+                                                                      kSecondaryColor,
+                                                                  btnText:
+                                                                      "Apply",
+                                                                  minWidth: 100,
+                                                                  onPressed:
+                                                                      () {
+                                                                    createMessageInput(
+                                                                            context)
+                                                                        .then((value) =>
+                                                                            {
+                                                                              jobsApplied.insert(0, {
+                                                                                "user": user.id,
+                                                                                "message": value
+                                                                              }),
+                                                                              userApplied.insert(0, job.id),
+                                                                              _firestore.collection("users").doc(loggedInUser.uid).update({
+                                                                                "appliedJobs": userApplied
+                                                                              }),
+                                                                              _firestore.collection("jobs").doc(job.id).update({
+                                                                                "askedBy": jobsApplied
+                                                                              }),
+                                                                            });
+                                                                    joblist
+                                                                        .removeAt(
+                                                                            0);
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    title: Text(
+                                                      job.data()["date"],
+                                                      style: TextStyle(
+                                                          color:
+                                                              kSecondaryColor),
+                                                    ),
+                                                    subtitle: Text(
+                                                      "From ${job.data()["from"]} to ${job.data()["to"]}",
+                                                      style: TextStyle(
+                                                          color:
+                                                              kSecondaryColor),
+                                                    ),
+                                                  ),
+                                                ])));
+                                        joblist.insert(0, jobCard);
+                                      }
                                     }
 
                                     return Container(

@@ -374,6 +374,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'wage': bs.wage,
                                     'imageUrl': bs.profileImage,
                                     'appliedJobs': bs.appliedJobs,
+                                    'assignedJobs': bs.assignedJobs,
                                     'followers': "0",
                                     "recommends": "0",
                                     "rating": "0",

@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
-
-class Job extends ChangeNotifier {
+class Job {
   String from, to, creator, assignedTo, status, date;
   List askedTo, askedBy;
   int maxWage;
