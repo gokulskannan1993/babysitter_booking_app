@@ -1,4 +1,5 @@
 import 'package:babysitter_booking_app/screens/home_screen.dart';
+import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
 import 'package:babysitter_booking_app/screens/login_screen.dart';
 import 'package:babysitter_booking_app/screens/map_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_edit_screen.dart';
@@ -34,6 +35,7 @@ class BabysitterBookingApp extends StatelessWidget {
         AddJobScreen.routeName: (context) => AddJobScreen(),
         SelectBabysitter.routeName: (context) => SelectBabysitter(),
         ProfileEditScreen.routeName: (context) => ProfileEditScreen(),
+        JobDetailScreen.routeName: (context) => JobDetailScreen(),
       },
     );
   }

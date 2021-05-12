@@ -1,13 +1,10 @@
-import 'package:babysitter_booking_app/models/jobs_model.dart';
+import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
-import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:numberpicker/numberpicker.dart';
-import 'package:intl/intl.dart';
 
 import 'constants.dart';
 
@@ -50,7 +47,8 @@ class _SelectBabysitter extends State<SelectBabysitter> {
   @override
   Widget build(BuildContext context) {
     data = ModalRoute.of(context).settings.arguments;
-    print(data["maxWage"]);
+    List askedUsers = data["askedUsers"];
+
     return Scaffold(
       body: Container(
         child: StreamBuilder(
@@ -63,7 +61,8 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                 List<Card> sitterList = [];
                 final sitters = snapshot.data.docs;
                 for (var sitter in sitters) {
-                  if (sitter.data()["wage"] <= data["maxWage"]) {
+                  if (sitter.data()["wage"] <= data["maxWage"] &&
+                      !askedUsers.contains(sitter.id)) {
                     final sitterCard = Card(
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -133,9 +132,19 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                                     .collection("jobs")
                                     .doc(data["jobID"])
                                     .update({
-                                  "askedTo": sitter.id,
+                                  "askedTo": FieldValue.arrayUnion([sitter.id])
                                 });
-                                Navigator.pop(context);
+                                _firestore
+                                    .collection("users")
+                                    .doc(sitter.id)
+                                    .update({
+                                  "offeredJobs":
+                                      FieldValue.arrayUnion([data["jobID"]])
+                                });
+
+                                Navigator.pushReplacementNamed(
+                                    context, JobDetailScreen.routeName,
+                                    arguments: {"job": data["jobID"]});
                               },
                             )
                           ],

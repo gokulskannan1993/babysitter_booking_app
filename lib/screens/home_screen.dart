@@ -2,6 +2,7 @@ import 'package:babysitter_booking_app/models/babysitter_model.dart';
 import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
@@ -13,8 +14,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "home_screen";
@@ -738,313 +737,6 @@ class CardForJobs extends StatelessWidget {
                       border: Border.all(color: kSecondaryColor)),
                   child: Column(
                     children: [
-                      FutureBuilder(
-                        future: _firestore
-                            .collection("users")
-                            .doc(job.data()["creator"])
-                            .get(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text("Loading...");
-                          } else {
-                            Map<String, dynamic> userData =
-                                snapshot.data.data();
-                            return Container(
-                              padding: EdgeInsets.all(20),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, UserScreen.routeName,
-                                      arguments: {
-                                        "userid": snapshot.data.id,
-                                        "name": userData["name"],
-                                        "about": userData["about"],
-                                        "county": userData["county"],
-                                        "rating": userData["rating"],
-                                        "followers": userData["followers"],
-                                        "recommends": userData["recommends"],
-                                        "imageUrl": userData["imageUrl"],
-                                        "role": userData["role"]
-                                      });
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage:
-                                          NetworkImage(userData["imageUrl"]),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          "${userData["name"]}",
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        Text(
-                                          "Created by",
-                                          style: TextStyle(fontSize: 10),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      if (job.data()["assignedTo"] != "")
-                        FutureBuilder(
-                          future: _firestore
-                              .collection("users")
-                              .doc(job.data()["assignedTo"])
-                              .get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              // if the snapshot is loading
-                              return Text("Loading...");
-                            } else {
-                              Map<String, dynamic> userData =
-                                  snapshot.data.data();
-                              return Container(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, UserScreen.routeName,
-                                        arguments: {
-                                          "userid": snapshot.data.id,
-                                          "name": userData["name"],
-                                          "about": userData["about"],
-                                          "county": userData["county"],
-                                          "rating": userData["rating"],
-                                          "followers": userData["followers"],
-                                          "recommends": userData["recommends"],
-                                          "imageUrl": userData["imageUrl"],
-                                          "role": userData["role"]
-                                        });
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            "${userData["name"]}",
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                          Text(
-                                            "Assigned to",
-                                            style: TextStyle(fontSize: 10),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      CircleAvatar(
-                                        radius: 30,
-                                        backgroundImage:
-                                            NetworkImage(userData["imageUrl"]),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      if (job.data()["askedTo"] != [])
-                        for (int i = 0;
-                            i < List.from(job.data()["askedTo"]).length;
-                            i++)
-                          FutureBuilder(
-                            future: _firestore
-                                .collection("users")
-                                .doc(
-                                    List.from(job.data()["askedTo"])[i]["user"])
-                                .get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                // if the snapshot is loading
-                                return Text("Loading...");
-                              } else {
-                                Map<String, dynamic> userData =
-                                    snapshot.data.data();
-                                return Container(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, UserScreen.routeName,
-                                          arguments: {
-                                            "userid": snapshot.data.id,
-                                            "name": userData["name"],
-                                            "about": userData["about"],
-                                            "county": userData["county"],
-                                            "rating": userData["rating"],
-                                            "followers": userData["followers"],
-                                            "recommends":
-                                                userData["recommends"],
-                                            "imageUrl": userData["imageUrl"],
-                                            "role": userData["role"]
-                                          });
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              "${userData["name"]}",
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            Text(
-                                              "Status: Waiting for Babysitter to Accept",
-                                              style: TextStyle(fontSize: 10),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundImage: NetworkImage(
-                                              userData["imageUrl"]),
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                      if (job.data()["askedBy"] != [])
-                        for (int i = 0;
-                            i < List.from(job.data()["askedBy"]).length;
-                            i++)
-                          FutureBuilder(
-                            future: _firestore
-                                .collection("users")
-                                .doc(
-                                    List.from(job.data()["askedBy"])[i]["user"])
-                                .get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                // if the snapshot is loading
-                                return Text("Loading...");
-                              } else {
-                                Map<String, dynamic> userData =
-                                    snapshot.data.data();
-                                return Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, UserScreen.routeName,
-                                          arguments: {
-                                            "userid": snapshot.data.id,
-                                            "name": userData["name"],
-                                            "about": userData["about"],
-                                            "county": userData["county"],
-                                            "rating": userData["rating"],
-                                            "followers": userData["followers"],
-                                            "recommends":
-                                                userData["recommends"],
-                                            "imageUrl": userData["imageUrl"],
-                                            "role": userData["role"]
-                                          });
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundImage: NetworkImage(
-                                              userData["imageUrl"]),
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              "${userData["name"]}",
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            Text(
-                                              List.from(job.data()["askedBy"])[
-                                                  i]["message"],
-                                              style: TextStyle(fontSize: 10),
-                                            ),
-                                          ],
-                                        ),
-                                        IconButton(
-                                            icon: Icon(
-                                              Icons.done,
-                                              size: 20,
-                                              color: Colors.green,
-                                            ),
-                                            onPressed: () {
-                                              _firestore
-                                                  .collection("jobs")
-                                                  .doc(job.id)
-                                                  .update({
-                                                "assignedTo": List.from(job
-                                                        .data()["askedBy"])[i]
-                                                    ["user"],
-                                                "askedBy": [],
-                                                "askedTo": []
-                                              });
-                                            }),
-                                        IconButton(
-                                            icon: Icon(
-                                              Icons.close,
-                                              size: 20,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              List askedBy = List.from(
-                                                  job.data()["askedBy"]);
-                                              askedBy.removeAt(i);
-                                              _firestore
-                                                  .collection("jobs")
-                                                  .doc(job.id)
-                                                  .update({
-                                                "askedBy": askedBy,
-                                              });
-                                            }),
-                                        IconButton(
-                                            icon: Icon(
-                                              Icons.message,
-                                              size: 20,
-                                              color: Colors.blue,
-                                            ),
-                                            onPressed: () {}),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
                       ListTile(
                         title: Text(
                           job.data()["date"],
@@ -1058,33 +750,15 @@ class CardForJobs extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          if (job.data()["assignedTo"] == "")
-                            CustomLargeButton(
-                              textColor: kSecondaryColor,
-                              backgroundColor: kPrimaryColor,
-                              btnText: job.data()["askedTo"] == ""
-                                  ? "Add Babysitter"
-                                  : "Change Babysitter",
-                              minWidth: 150,
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, SelectBabysitter.routeName,
-                                    arguments: {
-                                      "jobID": job.id,
-                                      "maxWage": job.data()["maxWage"]
-                                    });
-                              },
-                            ),
                           CustomLargeButton(
                             textColor: kPrimaryColor,
                             backgroundColor: kSecondaryColor,
-                            btnText: "Delete",
+                            btnText: "More Info",
                             minWidth: 150,
                             onPressed: () {
-                              _firestore
-                                  .collection("jobs")
-                                  .doc(job.id)
-                                  .delete();
+                              Navigator.pushNamed(
+                                  context, JobDetailScreen.routeName,
+                                  arguments: {"job": job.id});
                             },
                           )
                         ],

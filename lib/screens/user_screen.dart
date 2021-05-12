@@ -1,5 +1,8 @@
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserScreen extends StatefulWidget {
@@ -10,6 +13,32 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   Map data = {};
+
+  //instance of firestore
+  final _firestore = FirebaseFirestore.instance;
+  //fire auth instance
+  final _auth = FirebaseAuth.instance;
+
+  User loggedInUser;
+
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  //checks for logged in user
+  void getCurrentUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+      } else {
+        Navigator.pushNamed(context, WelcomeScreen.routeName);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +130,7 @@ class _UserScreenState extends State<UserScreen> {
                 CustomLargeButton(
                   textColor: kPrimaryColor,
                   backgroundColor: kSecondaryColor,
-                  btnText: "Add to favorites",
+                  btnText: "Add to Contacts",
                   minWidth: 150,
                 ),
                 CustomLargeButton(
