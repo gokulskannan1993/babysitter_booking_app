@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:babysitter_booking_app/models/babysitter_model.dart';
-import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/home_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_edit_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,20 +18,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  //for showing the data on the fields
-  String role,
-      username,
-      email,
-      about,
-      phone,
-      location,
-      rating,
-      followers,
-      recommends;
-
-  Map data = {};
-  UserModel user;
-
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
 
@@ -41,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //fire auth instance
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
+
+  UserModel user;
 
   @override
   void initState() {
@@ -62,12 +49,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // upload the image to firebase
       var snapshot = await _storage.ref().child(image.path).putFile(file);
       String url = await snapshot.ref.getDownloadURL();
-      _firestore.collection("users").doc(user.id).update({
+      _firestore.collection("users").doc(loggedInUser.uid).update({
         "imageUrl": url,
       });
-      setState(() {
-        user.profileImage = url;
-      });
+      setState(() {});
     } else {
       print("No path");
     }
@@ -77,7 +62,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void getCurrentUser() {
     try {
       final user = _auth.currentUser;
-      if (user == null) {
+      if (user != null) {
+        loggedInUser = user;
+      } else {
         Navigator.pushNamed(context, WelcomeScreen.routeName);
       }
     } catch (e) {
@@ -87,167 +74,195 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    data = ModalRoute.of(context).settings.arguments;
-    user = data['user'];
-
     return Scaffold(
         appBar: AppBar(
           leading: BackButton(
+            onPressed: () {
+              Navigator.pushNamed(context, HomeScreen.routeName);
+            },
             color: kSecondaryColor,
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: ListView(children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.25,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  Stack(children: [
-                    GestureDetector(
-                      onTap: () {
-                        uploadImage();
-                      },
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(user.profileImage),
-                      ),
+        body: FutureBuilder(
+          future: _firestore.collection("users").doc(loggedInUser.uid).get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // if the snapshot is loading
+              return Text("Loading...");
+            } else {
+              Map<String, dynamic> currentUser = snapshot.data.data();
+              print(currentUser);
+
+              return ListView(children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        Stack(children: [
+                          GestureDetector(
+                            onTap: () {
+                              uploadImage();
+                            },
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  NetworkImage(currentUser["imageUrl"]),
+                            ),
+                          ),
+                        ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          currentUser["name"],
+                          style:
+                              TextStyle(fontSize: 16, color: kSecondaryColor),
+                        ),
+                        Text(
+                          currentUser["role"] == "Parent"
+                              ? "Parent"
+                              : "Babysitter",
+                          style:
+                              TextStyle(fontSize: 16, color: kMediumDarkText),
+                        ),
+                      ],
                     ),
-                  ]),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    user.name,
-                    style: TextStyle(fontSize: 16, color: kSecondaryColor),
-                  ),
-                  Text(
-                    role = user is Parent ? "Parent" : "Babysitter",
-                    style: TextStyle(fontSize: 16, color: kMediumDarkText),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Text("User Rating"),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(user.rating),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Followers"),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(user.followers),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Recommends"),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(user.recommends),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
-                        arguments: {"user": user, "state": "personalInfo"});
-                  },
-                  child: ListTile(
-                    title: Text(
-                      "Personal Information",
-                      style: TextStyle(color: kSecondaryColor),
-                    ),
-                    leading: Icon(Icons.info),
-                  ),
-                ), // personal info
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
-                        arguments: {"user": user, "state": "address"});
-                  },
-                  child: ListTile(
-                    title: Text(
-                      "Address",
-                      style: TextStyle(color: kSecondaryColor),
-                    ),
-                    subtitle: Text(user.street + ", " + user.county),
-                    leading: Icon(Icons.location_on),
-                  ),
-                ), // location info
-                GestureDetector(
-                  child: ListTile(
-                    title: Text(
-                      "Email",
-                      style: TextStyle(color: kSecondaryColor),
-                    ),
-                    subtitle: Text(user.email),
-                    leading: Icon(Icons.email),
-                  ),
-                ), // email
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, ProfileEditScreen.routeName,
-                        arguments: {"user": user, "state": "phone"});
-                  },
-                  child: ListTile(
-                    title: Text(
-                      "Phone",
-                      style: TextStyle(color: kSecondaryColor),
-                    ),
-                    subtitle: Text(user.phone),
-                    leading: Icon(Icons.phone),
                   ),
                 ),
-                if (user is Babysitter)
-                  GestureDetector(
-                    child: ListTile(
-                      title: Text(
-                        "Availability",
-                        style: TextStyle(color: kSecondaryColor),
-                      ),
-                      leading: Icon(Icons.settings),
+                Card(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            Text("User Rating"),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(currentUser["rating"]),
+                          ],
+                        ),
+                        if (currentUser["role"] == "Babysitter")
+                          Column(
+                            children: [
+                              Text("Followers"),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(List.from(currentUser["followers"])
+                                  .length
+                                  .toString()),
+                            ],
+                          ),
+                        Column(
+                          children: [
+                            Text("Contacts"),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(List.from(currentUser["contacts"])
+                                .length
+                                .toString()),
+                          ],
+                        ),
+                      ],
                     ),
-                  ), // phone
-                GestureDetector(
-                  onTap: () {
-                    _auth.signOut();
-                    Navigator.pushNamed(context, WelcomeScreen.routeName);
-                  },
-                  child: ListTile(
-                    title: Text(
-                      "Sign Out",
-                      style: TextStyle(color: kSecondaryColor),
-                    ),
-                    leading: Icon(Icons.logout),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ]));
+                Container(
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, ProfileEditScreen.routeName,
+                              arguments: {"state": "personalInfo"});
+                        },
+                        child: ListTile(
+                          title: Text(
+                            "Personal Information",
+                            style: TextStyle(color: kSecondaryColor),
+                          ),
+                          leading: Icon(Icons.info),
+                        ),
+                      ), // personal info
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, ProfileEditScreen.routeName,
+                              arguments: {"state": "address"});
+                        },
+                        child: ListTile(
+                          title: Text(
+                            "Address",
+                            style: TextStyle(color: kSecondaryColor),
+                          ),
+                          subtitle: Text(currentUser["street"] +
+                              ", " +
+                              currentUser["county"]),
+                          leading: Icon(Icons.location_on),
+                        ),
+                      ), // location info
+                      GestureDetector(
+                        child: ListTile(
+                          title: Text(
+                            "Email",
+                            style: TextStyle(color: kSecondaryColor),
+                          ),
+                          subtitle: Text(currentUser["email"]),
+                          leading: Icon(Icons.email),
+                        ),
+                      ), // email
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, ProfileEditScreen.routeName,
+                              arguments: {"state": "phone"});
+                        },
+                        child: ListTile(
+                          title: Text(
+                            "Phone",
+                            style: TextStyle(color: kSecondaryColor),
+                          ),
+                          subtitle: Text(currentUser["phone"]),
+                          leading: Icon(Icons.phone),
+                        ),
+                      ),
+                      if (currentUser["role"] == "Babysitter")
+                        GestureDetector(
+                          child: ListTile(
+                            title: Text(
+                              "Availability",
+                              style: TextStyle(color: kSecondaryColor),
+                            ),
+                            leading: Icon(Icons.settings),
+                          ),
+                        ), // phone
+                      GestureDetector(
+                        onTap: () {
+                          _auth.signOut();
+                          Navigator.pushNamed(context, WelcomeScreen.routeName);
+                        },
+                        child: ListTile(
+                          title: Text(
+                            "Sign Out",
+                            style: TextStyle(color: kSecondaryColor),
+                          ),
+                          leading: Icon(Icons.logout),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ]);
+            }
+          },
+        ));
   }
 }

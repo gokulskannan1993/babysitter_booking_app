@@ -78,14 +78,6 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                                     context, UserScreen.routeName,
                                     arguments: {
                                       "userid": sitter.id,
-                                      "name": sitter.data()["name"],
-                                      "about": sitter.data()["about"],
-                                      "county": sitter.data()["county"],
-                                      "rating": sitter.data()["rating"],
-                                      "followers": sitter.data()["followers"],
-                                      "recommends": sitter.data()["recommends"],
-                                      "imageUrl": sitter.data()["imageUrl"],
-                                      "role": sitter.data()["role"]
                                     });
                               },
                               child: CircleAvatar(

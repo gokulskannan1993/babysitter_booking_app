@@ -5,11 +5,12 @@ class Babysitter extends UserModel {
   String id, email, password, name, street, county;
   int wage;
   List<Job> jobs;
-  List appliedJobs, assignedJobs, offeredJobs;
+  List appliedJobs, assignedJobs, offeredJobs, recommends;
 
   Babysitter() : super() {
     this.wage = 0;
     this.jobs = [];
-    this.appliedJobs = this.assignedJobs = this.offeredJobs = [];
+    this.appliedJobs =
+        this.assignedJobs = this.offeredJobs = this.recommends = [];
   }
 }
