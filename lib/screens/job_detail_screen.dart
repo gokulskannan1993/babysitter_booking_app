@@ -377,6 +377,20 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                               "askedBy": [],
                                               "askedTo": []
                                             });
+                                            _firestore
+                                                .collection("users")
+                                                .doc(
+                                                    List.from(job["askedBy"])[i]
+                                                        ["user"])
+                                                .update({
+                                              "appliedJobs":
+                                                  FieldValue.arrayRemove(
+                                                      [data["job"]]),
+                                              "assignedJobs":
+                                                  FieldValue.arrayUnion(
+                                                      [data["job"]]),
+                                            });
+                                            setState(() {});
                                           }),
                                       IconButton(
                                           icon: Icon(
@@ -394,6 +408,18 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                                 .update({
                                               "askedBy": askedBy,
                                             });
+
+                                            _firestore
+                                                .collection("users")
+                                                .doc(
+                                                    List.from(job["askedBy"])[i]
+                                                        ["user"])
+                                                .update({
+                                              "appliedJobs":
+                                                  FieldValue.arrayRemove(
+                                                      [data["job"]]),
+                                            });
+                                            setState(() {});
                                           }),
                                       IconButton(
                                           icon: Icon(

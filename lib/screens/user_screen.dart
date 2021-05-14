@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
@@ -151,51 +153,52 @@ class _UserScreenState extends State<UserScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              CustomLargeButton(
-                                textColor: kPrimaryColor,
-                                backgroundColor: kSecondaryColor,
-                                btnText: List.from(currentUser["contacts"])
-                                        .contains(data["userid"])
-                                    ? "Unfollow"
-                                    : "Follow",
-                                minWidth: 150,
-                                onPressed: () {
-                                  if (List.from(currentUser["contacts"])
-                                      .contains(data["userid"])) {
-                                    _firestore
-                                        .collection("users")
-                                        .doc(loggedInUser.uid)
-                                        .update({
-                                      "contacts": FieldValue.arrayRemove(
-                                          [data["userid"]])
-                                    });
-                                    _firestore
-                                        .collection("users")
-                                        .doc(data["userid"])
-                                        .update({
-                                      "followers": FieldValue.arrayRemove(
-                                          [loggedInUser.uid])
-                                    });
-                                  } else {
-                                    _firestore
-                                        .collection("users")
-                                        .doc(loggedInUser.uid)
-                                        .update({
-                                      "contacts": FieldValue.arrayUnion(
-                                          [data["userid"]])
-                                    });
-                                    _firestore
-                                        .collection("users")
-                                        .doc(data["userid"])
-                                        .update({
-                                      "followers": FieldValue.arrayUnion(
-                                          [loggedInUser.uid])
-                                    });
-                                  }
+                              if (profileUser["role"] == "Babysitter")
+                                CustomLargeButton(
+                                  textColor: kPrimaryColor,
+                                  backgroundColor: kSecondaryColor,
+                                  btnText: List.from(currentUser["contacts"])
+                                          .contains(data["userid"])
+                                      ? "Unfollow"
+                                      : "Follow",
+                                  minWidth: 150,
+                                  onPressed: () {
+                                    if (List.from(currentUser["contacts"])
+                                        .contains(data["userid"])) {
+                                      _firestore
+                                          .collection("users")
+                                          .doc(loggedInUser.uid)
+                                          .update({
+                                        "contacts": FieldValue.arrayRemove(
+                                            [data["userid"]])
+                                      });
+                                      _firestore
+                                          .collection("users")
+                                          .doc(data["userid"])
+                                          .update({
+                                        "followers": FieldValue.arrayRemove(
+                                            [loggedInUser.uid])
+                                      });
+                                    } else {
+                                      _firestore
+                                          .collection("users")
+                                          .doc(loggedInUser.uid)
+                                          .update({
+                                        "contacts": FieldValue.arrayUnion(
+                                            [data["userid"]])
+                                      });
+                                      _firestore
+                                          .collection("users")
+                                          .doc(data["userid"])
+                                          .update({
+                                        "followers": FieldValue.arrayUnion(
+                                            [loggedInUser.uid])
+                                      });
+                                    }
 
-                                  setState(() {});
-                                },
-                              ),
+                                    setState(() {});
+                                  },
+                                ),
                               CustomLargeButton(
                                 textColor: kPrimaryColor,
                                 backgroundColor: kSecondaryColor,
@@ -208,29 +211,73 @@ class _UserScreenState extends State<UserScreen> {
                       SizedBox(
                         height: 16,
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 48),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "About",
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: kSecondaryColor),
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                              profileUser["about"],
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                  color: kSecondaryColor),
-                            )
-                          ],
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (profileUser["role"] == "Parent")
+                                Text(
+                                  "Number of kids: ${List.from(profileUser["children"]).length}",
+                                  style: TextStyle(
+                                      fontSize: 15, color: kSecondaryColor),
+                                ),
+                              if (profileUser["role"] == "Babysitter")
+                                Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Maximum number of kids: ${profileUser["maxNoofChildren"]}",
+                                      style: TextStyle(
+                                          fontSize: 15, color: kSecondaryColor),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "Maximum Age:    ${profileUser["maxAgeofChild"]}",
+                                      style: TextStyle(
+                                          fontSize: 15, color: kSecondaryColor),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "Maximum Age:    ${profileUser["minAgeofChild"]}",
+                                      style: TextStyle(
+                                          fontSize: 15, color: kSecondaryColor),
+                                    ),
+                                  ],
+                                ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "About",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: kSecondaryColor),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                profileUser["about"],
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: kSecondaryColor),
+                              ),
+                              SizedBox(
+                                height: 50,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],
