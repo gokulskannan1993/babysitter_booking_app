@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Text("Loading...");
               } else {
                 //Mapping all the fields
-                Map<String, dynamic> userData = snapshot.data.data();
+                Map<String, dynamic> currentUser = snapshot.data.data();
 
                 return SingleChildScrollView(
                   child: Container(
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   });
                                 },
                               ),
-                              if (userData["role"] == "Babysitter")
+                              if (currentUser["role"] == "Babysitter")
                                 CustomLargeButton(
                                   minWidth: 100,
                                   backgroundColor: state == "browse"
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         if (state == "default" &&
-                            userData["role"] == "Babysitter")
+                            currentUser["role"] == "Babysitter")
                           Column(
                             children: [
                               Row(
@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               else if (homestate == "offered")
                                 Column(
                                   children: [
-                                    if (List.from(userData["offeredJobs"])
+                                    if (List.from(currentUser["offeredJobs"])
                                         .isEmpty)
                                       Text(
                                         "No Jobs Offered",
@@ -243,7 +243,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             TextStyle(color: kSecondaryColor),
                                       )
                                     else
-                                      for (var jobId in userData["offeredJobs"])
+                                      for (var jobId
+                                          in currentUser["offeredJobs"])
                                         FutureBuilder(
                                             future: _firestore
                                                 .collection("jobs")
@@ -467,9 +468,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               else if (homestate == "applied")
                                 Column(
                                   children: [
-                                    if (List.from(userData["appliedJobs"])
+                                    if (List.from(currentUser["appliedJobs"])
                                         .isNotEmpty)
-                                      for (var jobId in userData["appliedJobs"])
+                                      for (var jobId
+                                          in currentUser["appliedJobs"])
                                         FutureBuilder(
                                             future: _firestore
                                                 .collection("jobs")
@@ -600,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   List
                                                                       appliedJobs =
                                                                       List.from(
-                                                                          userData[
+                                                                          currentUser[
                                                                               "appliedJobs"]);
                                                                   List askedBy =
                                                                       List.from(
@@ -671,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           )
                         else if (state == "default" &&
-                            userData["role"] == "Parent")
+                            currentUser["role"] == "Parent")
                           Container(
                             child: Column(
                               children: [
@@ -706,11 +708,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Card> joblist = [];
                                     final jobs = snapshot.data.docs;
                                     for (var job in jobs) {
+                                      bool isAlright = true;
                                       List jobsApplied =
                                           List.from(job.data()["askedBy"]);
                                       List userApplied =
-                                          List.from(userData["appliedJobs"]);
-                                      if (!userApplied.contains(job.id)) {
+                                          List.from(currentUser["appliedJobs"]);
+
+                                      for (var child in job["children"]) {
+                                        if (child["age"] <
+                                                currentUser["minAgeofChild"] ||
+                                            child["age"] >
+                                                currentUser["maxAgeofChild"]) {
+                                          isAlright = false;
+                                        }
+                                      }
+
+                                      if (!userApplied.contains(job.id) &&
+                                          currentUser["maxNoofChildren"] >=
+                                              List.from(job["children"])
+                                                  .length &&
+                                          isAlright) {
                                         final jobCard = Card(
                                             child: Container(
                                                 decoration: BoxDecoration(
@@ -740,6 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             userData = snapshot
                                                                 .data
                                                                 .data();
+
                                                         return Container(
                                                           padding:
                                                               EdgeInsets.all(
@@ -756,75 +774,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         snapshot
                                                                             .data
                                                                             .id,
-                                                                    "name": userData[
-                                                                        "name"],
-                                                                    "about":
-                                                                        userData[
-                                                                            "about"],
-                                                                    "county":
-                                                                        userData[
-                                                                            "county"],
-                                                                    "rating":
-                                                                        userData[
-                                                                            "rating"],
-                                                                    "followers":
-                                                                        userData[
-                                                                            "followers"],
-                                                                    "recommends":
-                                                                        userData[
-                                                                            "recommends"],
-                                                                    "imageUrl":
-                                                                        userData[
-                                                                            "imageUrl"],
-                                                                    "role":
-                                                                        userData[
-                                                                            "role"]
                                                                   });
                                                             },
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceAround,
+                                                            child: Column(
                                                               children: [
-                                                                CircleAvatar(
-                                                                  radius: 30,
-                                                                  backgroundImage:
-                                                                      NetworkImage(
-                                                                          userData[
-                                                                              "imageUrl"]),
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 10,
-                                                                ),
-                                                                Column(
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
                                                                   children: [
-                                                                    Text(
-                                                                      "${userData["name"]}",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              15),
+                                                                    CircleAvatar(
+                                                                      radius:
+                                                                          30,
+                                                                      backgroundImage:
+                                                                          NetworkImage(
+                                                                              userData["imageUrl"]),
                                                                     ),
-                                                                    Text(
-                                                                      "Created by",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              10),
+                                                                    SizedBox(
+                                                                      width: 10,
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                                CustomLargeButton(
-                                                                  textColor:
-                                                                      kPrimaryColor,
-                                                                  backgroundColor:
-                                                                      kSecondaryColor,
-                                                                  btnText:
-                                                                      "Apply",
-                                                                  minWidth: 100,
-                                                                  onPressed:
-                                                                      () {
-                                                                    createMessageInput(
-                                                                            context)
-                                                                        .then((value) =>
+                                                                    Column(
+                                                                      children: [
+                                                                        Text(
+                                                                          "${userData["name"]}",
+                                                                          style:
+                                                                              TextStyle(fontSize: 15),
+                                                                        ),
+                                                                        Text(
+                                                                          "Created by",
+                                                                          style:
+                                                                              TextStyle(fontSize: 10),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    CustomLargeButton(
+                                                                      textColor:
+                                                                          kPrimaryColor,
+                                                                      backgroundColor:
+                                                                          kSecondaryColor,
+                                                                      btnText:
+                                                                          "Apply",
+                                                                      minWidth:
+                                                                          100,
+                                                                      onPressed:
+                                                                          () {
+                                                                        createMessageInput(context).then((value) =>
                                                                             {
                                                                               jobsApplied.insert(0, {
                                                                                 "user": loggedInUser.uid,
@@ -838,10 +832,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 "askedBy": jobsApplied
                                                                               }),
                                                                             });
-                                                                    joblist
-                                                                        .removeAt(
-                                                                            0);
-                                                                  },
+                                                                        joblist
+                                                                            .removeAt(0);
+                                                                      },
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                ListTile(
+                                                                  title: Text(
+                                                                    "Number of Children: ${List.from(userData["children"]).length.toString()}",
+                                                                    style: TextStyle(
+                                                                        color:
+                                                                            kSecondaryColor),
+                                                                  ),
+                                                                ),
+                                                                ListTile(
+                                                                  title: Text(
+                                                                    job.data()[
+                                                                        "date"],
+                                                                    style: TextStyle(
+                                                                        color:
+                                                                            kSecondaryColor),
+                                                                  ),
+                                                                  subtitle:
+                                                                      Text(
+                                                                    "From ${job.data()["from"]} to ${job.data()["to"]}",
+                                                                    style: TextStyle(
+                                                                        color:
+                                                                            kSecondaryColor),
+                                                                  ),
                                                                 ),
                                                               ],
                                                             ),
@@ -849,20 +868,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         );
                                                       }
                                                     },
-                                                  ),
-                                                  ListTile(
-                                                    title: Text(
-                                                      job.data()["date"],
-                                                      style: TextStyle(
-                                                          color:
-                                                              kSecondaryColor),
-                                                    ),
-                                                    subtitle: Text(
-                                                      "From ${job.data()["from"]} to ${job.data()["to"]}",
-                                                      style: TextStyle(
-                                                          color:
-                                                              kSecondaryColor),
-                                                    ),
                                                   ),
                                                 ])));
                                         joblist.insert(0, jobCard);

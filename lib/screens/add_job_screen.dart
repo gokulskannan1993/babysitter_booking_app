@@ -28,6 +28,7 @@ class _AddJobState extends State<AddJobScreen> {
       timeFrom = "Select time from",
       timeTo = "Select time To";
   int maxWage = 10;
+  int maxage, minage;
 
   void initState() {
     super.initState();
@@ -53,132 +54,146 @@ class _AddJobState extends State<AddJobScreen> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(20),
-        child: Card(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 100,
-              ),
-              ListTile(
-                title: Text(
-                  "Create a Job",
-                  style: TextStyle(color: kSecondaryColor, fontSize: 30),
-                ),
-              ),
-              ListTile(
-                  title: Text(
-                    dateString,
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_down),
-                  subtitle: Text(
-                    "On",
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  onTap: () {
-                    showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2022))
-                        .then((date) {
-                      setState(() {
-                        final DateFormat formatter = DateFormat('d MMMM, yyyy');
-                        dateString = formatter.format(date);
-                      });
-                    });
-                  }),
-              ListTile(
-                  title: Text(
-                    timeFrom,
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_down),
-                  subtitle: Text(
-                    "From",
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  onTap: () {
-                    showTimePicker(
-                            context: context, initialTime: TimeOfDay.now())
-                        .then((value) => {
-                              setState(() {
-                                timeFrom = value.format(context);
-                              })
+        child: FutureBuilder(
+          future: _firestore.collection("users").doc(loggedInUser.uid).get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading...");
+            } else {
+              Map<String, dynamic> currentUser = snapshot.data.data();
+              return Card(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 100,
+                    ),
+                    ListTile(
+                      title: Text(
+                        "Create a Job",
+                        style: TextStyle(color: kSecondaryColor, fontSize: 30),
+                      ),
+                    ),
+                    ListTile(
+                        title: Text(
+                          dateString,
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        trailing: Icon(Icons.keyboard_arrow_down),
+                        subtitle: Text(
+                          "On",
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        onTap: () {
+                          showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(2022))
+                              .then((date) {
+                            setState(() {
+                              final DateFormat formatter =
+                                  DateFormat('d MMMM, yyyy');
+                              dateString = formatter.format(date);
                             });
-                  }),
-              ListTile(
-                  title: Text(
-                    timeTo,
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  subtitle: Text(
-                    "To",
-                    style: TextStyle(color: kSecondaryColor),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_down),
-                  onTap: () {
-                    showTimePicker(
-                            context: context, initialTime: TimeOfDay.now())
-                        .then((value) => {
-                              setState(() {
-                                timeTo = value.format(context);
-                              })
-                            });
-                  }),
-              ListTile(
-                title: Text(
-                  "Select Maximum wage per hour (£)",
-                  style: TextStyle(color: kSecondaryColor, fontSize: 20),
-                ),
-              ),
-              NumberPicker(
-                  axis: Axis.horizontal,
-                  minValue: 10,
-                  maxValue: 100,
-                  value: maxWage,
-                  onChanged: (value) {
-                    setState(() {
-                      maxWage = value;
-                    });
-                  }),
-              SizedBox(
-                height: 30,
-              ),
-              FloatingActionButton(
-                backgroundColor: kSecondaryColor,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.add,
-                    color: kPrimaryColor,
-                  ),
-                ),
-                onPressed: () {
-                  Job newJob = Job();
-                  newJob.date = dateString;
-                  newJob.creator = loggedInUser.uid;
-                  newJob.from = timeFrom;
-                  newJob.to = timeTo;
-                  newJob.maxWage = maxWage;
+                          });
+                        }),
+                    ListTile(
+                        title: Text(
+                          timeFrom,
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        trailing: Icon(Icons.keyboard_arrow_down),
+                        subtitle: Text(
+                          "From",
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        onTap: () {
+                          showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now())
+                              .then((value) => {
+                                    setState(() {
+                                      timeFrom = value.format(context);
+                                    })
+                                  });
+                        }),
+                    ListTile(
+                        title: Text(
+                          timeTo,
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        subtitle: Text(
+                          "To",
+                          style: TextStyle(color: kSecondaryColor),
+                        ),
+                        trailing: Icon(Icons.keyboard_arrow_down),
+                        onTap: () {
+                          showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now())
+                              .then((value) => {
+                                    setState(() {
+                                      timeTo = value.format(context);
+                                    })
+                                  });
+                        }),
+                    ListTile(
+                      title: Text(
+                        "Select Maximum wage per hour (£)",
+                        style: TextStyle(color: kSecondaryColor, fontSize: 20),
+                      ),
+                    ),
+                    NumberPicker(
+                        axis: Axis.horizontal,
+                        minValue: 10,
+                        maxValue: 100,
+                        value: maxWage,
+                        onChanged: (value) {
+                          setState(() {
+                            maxWage = value;
+                          });
+                        }),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    FloatingActionButton(
+                      backgroundColor: kSecondaryColor,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.add,
+                          color: kPrimaryColor,
+                        ),
+                      ),
+                      onPressed: () {
+                        Job newJob = Job();
+                        newJob.date = dateString;
+                        newJob.creator = loggedInUser.uid;
+                        newJob.from = timeFrom;
+                        newJob.to = timeTo;
+                        newJob.maxWage = maxWage;
 
-                  _firestore.collection("jobs").add({
-                    "date": newJob.date,
-                    "creator": newJob.creator,
-                    "from": newJob.from,
-                    "to": newJob.to,
-                    "assignedTo": newJob.assignedTo,
-                    "status": newJob.status,
-                    "maxWage": newJob.maxWage,
-                    "askedTo": [],
-                    "askedBy": [],
-                  });
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-            ],
-          ),
+                        _firestore.collection("jobs").add({
+                          "date": newJob.date,
+                          "creator": newJob.creator,
+                          "from": newJob.from,
+                          "to": newJob.to,
+                          "assignedTo": newJob.assignedTo,
+                          "status": newJob.status,
+                          "maxWage": newJob.maxWage,
+                          "askedTo": [],
+                          "askedBy": [],
+                          "children": currentUser["children"]
+                        });
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
         ),
       ),
     );
