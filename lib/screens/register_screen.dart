@@ -41,7 +41,7 @@ class _RegisterScreen extends State<RegisterScreen> {
       confirmPassword,
       childGender = "male",
       phone;
-  int minWage = 10;
+  int minWage = 10, maxNoOfChildren = 5, minChildAge = 0, maxChildAge = 15;
   int childAge = 0;
   bool saving = false;
   String roleString = "I am a Babysitter", addChildStatus = "expand";
@@ -277,7 +277,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: TextField(
-                          maxLines: 10,
+                          maxLines: 5,
                           decoration: InputDecoration.collapsed(
                               hintText: "Enter your text here"),
                           style: TextStyle(color: kSecondaryColor),
@@ -293,110 +293,194 @@ class _RegisterScreen extends State<RegisterScreen> {
                       height: 24.0,
                     ),
                     if (user is Babysitter)
-                      ListTile(
-                        title: Text(
-                          "Select Minimum wage per hour (£)",
-                          style:
-                              TextStyle(color: kSecondaryColor, fontSize: 20),
-                        ),
+                      Column(
+                        children: [
+                          Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Minimum wage per hour (€):   ",
+                                  style: TextStyle(
+                                      color: kSecondaryColor, fontSize: 15),
+                                ),
+                                NumberPicker(
+                                    axis: Axis.horizontal,
+                                    itemWidth: 40,
+                                    itemCount: 3,
+                                    minValue: 10,
+                                    maxValue: 100,
+                                    value: minWage,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        minWage = value;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                          Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Minimum age of child:      ",
+                                  style: TextStyle(
+                                      color: kSecondaryColor, fontSize: 15),
+                                ),
+                                NumberPicker(
+                                    axis: Axis.horizontal,
+                                    itemWidth: 40,
+                                    itemCount: 3,
+                                    minValue: 0,
+                                    maxValue: 15,
+                                    value: minChildAge,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        minChildAge = value;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                          Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Maximum age of child:      ",
+                                  style: TextStyle(
+                                      color: kSecondaryColor, fontSize: 15),
+                                ),
+                                NumberPicker(
+                                    axis: Axis.horizontal,
+                                    itemWidth: 40,
+                                    itemCount: 3,
+                                    minValue: 0,
+                                    maxValue: 15,
+                                    value: maxChildAge,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        maxChildAge = value;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                          Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Maximum Number of child:      ",
+                                  style: TextStyle(
+                                      color: kSecondaryColor, fontSize: 15),
+                                ),
+                                NumberPicker(
+                                    axis: Axis.horizontal,
+                                    itemWidth: 40,
+                                    itemCount: 3,
+                                    minValue: 1,
+                                    maxValue: 5,
+                                    value: maxNoOfChildren,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        maxNoOfChildren = value;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     if (user is Babysitter)
-                      NumberPicker(
-                          axis: Axis.horizontal,
-                          minValue: 10,
-                          maxValue: 100,
-                          value: minWage,
-                          onChanged: (value) {
-                            setState(() {
-                              minWage = value;
-                            });
-                          }),
-                    if (user is Parent && addChildStatus == "expand")
-
-                      // For Adding Child
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                "Add Child",
-                                style: TextStyle(
-                                    color: kSecondaryColor, fontSize: 20),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Select Age",
-                                    style: TextStyle(
-                                        color: kSecondaryColor, fontSize: 17),
-                                  ),
-                                  NumberPicker(
-                                      itemCount: 3,
-                                      axis: Axis.vertical,
-                                      minValue: 0,
-                                      maxValue: 15,
-                                      value: childAge,
-                                      onChanged: (value) {
+                      if (user is Parent && addChildStatus == "expand")
+                        // For Adding Child
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Add Child",
+                                  style: TextStyle(
+                                      color: kSecondaryColor, fontSize: 20),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Select Age",
+                                      style: TextStyle(
+                                          color: kSecondaryColor, fontSize: 17),
+                                    ),
+                                    NumberPicker(
+                                        itemCount: 3,
+                                        axis: Axis.vertical,
+                                        minValue: 0,
+                                        maxValue: 15,
+                                        value: childAge,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            childAge = value;
+                                          });
+                                        }),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    CustomLargeButton(
+                                      backgroundColor: childGender == "male"
+                                          ? kSecondaryColor
+                                          : kPrimaryColor,
+                                      textColor: childGender == "male"
+                                          ? kPrimaryColor
+                                          : kSecondaryColor,
+                                      minWidth: 150,
+                                      btnText: "Male",
+                                      onPressed: () {
                                         setState(() {
-                                          childAge = value;
+                                          childGender = "male";
                                         });
-                                      }),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  CustomLargeButton(
-                                    backgroundColor: childGender == "male"
-                                        ? kSecondaryColor
-                                        : kPrimaryColor,
-                                    textColor: childGender == "male"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                    minWidth: 150,
-                                    btnText: "Male",
-                                    onPressed: () {
-                                      setState(() {
-                                        childGender = "male";
-                                      });
-                                    },
-                                  ),
-                                  CustomLargeButton(
-                                    backgroundColor: childGender == "female"
-                                        ? kSecondaryColor
-                                        : kPrimaryColor,
-                                    textColor: childGender == "female"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                    minWidth: 150,
-                                    btnText: "Female",
-                                    onPressed: () {
-                                      setState(() {
-                                        childGender = "female";
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              CustomLargeButton(
-                                textColor: kPrimaryColor,
-                                backgroundColor: kSecondaryColor,
-                                btnText: "Add Child",
-                                onPressed: () {
-                                  children.add(
-                                      {"gender": childGender, "age": childAge});
-                                  setState(() {
-                                    addChildStatus = "collapse";
-                                  });
-                                },
-                              )
-                            ],
+                                      },
+                                    ),
+                                    CustomLargeButton(
+                                      backgroundColor: childGender == "female"
+                                          ? kSecondaryColor
+                                          : kPrimaryColor,
+                                      textColor: childGender == "female"
+                                          ? kPrimaryColor
+                                          : kSecondaryColor,
+                                      minWidth: 150,
+                                      btnText: "Female",
+                                      onPressed: () {
+                                        setState(() {
+                                          childGender = "female";
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                CustomLargeButton(
+                                  textColor: kPrimaryColor,
+                                  backgroundColor: kSecondaryColor,
+                                  btnText: "Add Child",
+                                  onPressed: () {
+                                    children.add({
+                                      "gender": childGender,
+                                      "age": childAge
+                                    });
+                                    setState(() {
+                                      addChildStatus = "collapse";
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                     if (user is Parent && addChildStatus == "collapse")
                       Container(
                         child: Row(
@@ -496,8 +580,11 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'appliedJobs': bs.appliedJobs,
                                     'assignedJobs': bs.assignedJobs,
                                     "contacts": bs.contacts,
-                                    'followers': "0",
-                                    "recommends": "0",
+                                    'maxAgeofChild': maxChildAge,
+                                    'minAgeofChild': minChildAge,
+                                    'maxNoofChildren': maxNoOfChildren,
+                                    'followers': bs.followers,
+                                    "recommends": bs.recommends,
                                     "rating": "0",
                                   });
                                 }
