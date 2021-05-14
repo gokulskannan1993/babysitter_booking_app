@@ -911,7 +911,7 @@ class CardForJobsParent extends StatelessWidget {
       child: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection("jobs")
-            .where("creator ==" + loggedInUser.uid)
+            .where("creator", isEqualTo: loggedInUser.uid)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {

@@ -3,8 +3,10 @@ import 'package:babysitter_booking_app/models/parent_model.dart';
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/home_screen.dart';
+import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -27,6 +29,8 @@ class _RegisterScreen extends State<RegisterScreen> {
 
   UserModel user;
 
+  List children = [];
+
   String email,
       password,
       name,
@@ -35,10 +39,12 @@ class _RegisterScreen extends State<RegisterScreen> {
       county,
       about,
       confirmPassword,
+      childGender = "male",
       phone;
   int minWage = 10;
+  int childAge = 0;
   bool saving = false;
-  String roleString = "I am a Babysitter";
+  String roleString = "I am a Babysitter", addChildStatus = "expand";
   String userType = "Parent";
   @override
   Widget build(BuildContext context) {
@@ -258,7 +264,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                       height: 85.0,
                     ),
                     Text(
-                      user is Parent ? 'About my child' : "About me",
+                      user is Parent ? 'About us' : "About me",
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -294,16 +300,128 @@ class _RegisterScreen extends State<RegisterScreen> {
                               TextStyle(color: kSecondaryColor, fontSize: 20),
                         ),
                       ),
-                    NumberPicker(
-                        axis: Axis.horizontal,
-                        minValue: 10,
-                        maxValue: 100,
-                        value: minWage,
-                        onChanged: (value) {
-                          setState(() {
-                            minWage = value;
-                          });
-                        }),
+                    if (user is Babysitter)
+                      NumberPicker(
+                          axis: Axis.horizontal,
+                          minValue: 10,
+                          maxValue: 100,
+                          value: minWage,
+                          onChanged: (value) {
+                            setState(() {
+                              minWage = value;
+                            });
+                          }),
+                    if (user is Parent && addChildStatus == "expand")
+
+                      // For Adding Child
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Add Child",
+                                style: TextStyle(
+                                    color: kSecondaryColor, fontSize: 20),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Select Age",
+                                    style: TextStyle(
+                                        color: kSecondaryColor, fontSize: 17),
+                                  ),
+                                  NumberPicker(
+                                      itemCount: 3,
+                                      axis: Axis.vertical,
+                                      minValue: 0,
+                                      maxValue: 15,
+                                      value: childAge,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          childAge = value;
+                                        });
+                                      }),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  CustomLargeButton(
+                                    backgroundColor: childGender == "male"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    textColor: childGender == "male"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    minWidth: 150,
+                                    btnText: "Male",
+                                    onPressed: () {
+                                      setState(() {
+                                        childGender = "male";
+                                      });
+                                    },
+                                  ),
+                                  CustomLargeButton(
+                                    backgroundColor: childGender == "female"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    textColor: childGender == "female"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    minWidth: 150,
+                                    btnText: "Female",
+                                    onPressed: () {
+                                      setState(() {
+                                        childGender = "female";
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              CustomLargeButton(
+                                textColor: kPrimaryColor,
+                                backgroundColor: kSecondaryColor,
+                                btnText: "Add Child",
+                                onPressed: () {
+                                  children.add(
+                                      {"gender": childGender, "age": childAge});
+                                  setState(() {
+                                    addChildStatus = "collapse";
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (user is Parent && addChildStatus == "collapse")
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "Add Another Child",
+                              style: TextStyle(
+                                  color: kSecondaryColor, fontSize: 17),
+                            ),
+                            CustomIconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    addChildStatus = "expand";
+                                  });
+                                },
+                                minWidth: 100,
+                                backgroundColor: kSecondaryColor,
+                                icon: Icon(
+                                  Icons.add,
+                                  color: kPrimaryColor,
+                                ))
+                          ],
+                        ),
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -357,6 +475,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'followers': "0",
                                     "recommends": "0",
                                     "rating": "0",
+                                    "children": children,
                                   });
                                 } else {
                                   Babysitter bs = user;
