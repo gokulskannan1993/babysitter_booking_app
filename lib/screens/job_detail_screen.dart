@@ -452,7 +452,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                           CustomLargeButton(
                             textColor: kSecondaryColor,
                             backgroundColor: kPrimaryColor,
-                            btnText: "Ask Babysitter",
+                            btnText: "Find Babysitter",
                             minWidth: 150,
                             onPressed: () {
                               Navigator.pushNamed(

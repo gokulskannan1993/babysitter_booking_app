@@ -393,6 +393,35 @@ class _RegisterScreen extends State<RegisterScreen> {
                           ),
                         ],
                       ),
+                    if (user is Parent)
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          for (var child in children)
+                            Card(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    "${child["age"]} year old ${child["gender"]}",
+                                    style: TextStyle(color: kSecondaryColor),
+                                  ),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          children.remove(child);
+                                        });
+                                      })
+                                ],
+                              ),
+                            )
+                        ],
+                      ),
                     if (user is Parent && addChildStatus == "expand")
                       // For Adding Child
                       Card(

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
@@ -204,6 +205,11 @@ class _UserScreenState extends State<UserScreen> {
                                 backgroundColor: kSecondaryColor,
                                 btnText: "Message",
                                 minWidth: 150,
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, ChatScreen.routeName,
+                                      arguments: {"userid": data["userid"]});
+                                },
                               ),
                             ],
                           ),

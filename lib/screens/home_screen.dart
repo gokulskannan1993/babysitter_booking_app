@@ -101,129 +101,139 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           margin: EdgeInsets.all(30),
                           height: 75.0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CustomIconButton(
-                                icon: Icon(
-                                  Icons.account_circle,
-                                  color: kSecondaryColor,
-                                ),
-                                minWidth: 50,
-                                backgroundColor: kPrimaryColor,
-                                onPressed: () {
-                                  setState(() {
-                                    Navigator.pushNamed(
-                                        context, ProfileScreen.routeName,
-                                        arguments: {"user": loggedInUser.uid});
-                                  });
-                                },
-                              ),
-                              CustomLargeButton(
-                                minWidth: 100,
-                                backgroundColor: state == "default"
-                                    ? kSecondaryColor
-                                    : kPrimaryColor,
-                                textColor: state == "default"
-                                    ? kPrimaryColor
-                                    : kSecondaryColor,
-                                btnText: "Home",
-                                onPressed: () {
-                                  setState(() {
-                                    state = 'default';
-                                  });
-                                },
-                              ),
-                              if (currentUser["role"] == "Babysitter")
-                                CustomLargeButton(
-                                  minWidth: 100,
-                                  backgroundColor: state == "browse"
-                                      ? kSecondaryColor
-                                      : kPrimaryColor,
-                                  textColor: state == "browse"
-                                      ? kPrimaryColor
-                                      : kSecondaryColor,
-                                  btnText: "Browse",
+                          child: Card(
+                            elevation: 20,
+                            shadowColor: kSecondaryColor,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                CustomIconButton(
+                                  icon: Icon(
+                                    Icons.account_circle,
+                                    color: kSecondaryColor,
+                                  ),
+                                  minWidth: 50,
+                                  backgroundColor: kPrimaryColor,
                                   onPressed: () {
                                     setState(() {
-                                      state = 'browse';
+                                      Navigator.pushNamed(
+                                          context, ProfileScreen.routeName,
+                                          arguments: {
+                                            "user": loggedInUser.uid
+                                          });
                                     });
                                   },
                                 ),
-                              CustomIconButton(
-                                icon: Icon(
-                                  Icons.message,
-                                  color: state == "message"
+                                CustomLargeButton(
+                                  minWidth: 100,
+                                  backgroundColor: state == "default"
+                                      ? kSecondaryColor
+                                      : kPrimaryColor,
+                                  textColor: state == "default"
                                       ? kPrimaryColor
                                       : kSecondaryColor,
+                                  btnText: "Home",
+                                  onPressed: () {
+                                    setState(() {
+                                      state = 'default';
+                                    });
+                                  },
                                 ),
-                                minWidth: 50,
-                                backgroundColor: state == "message"
-                                    ? kSecondaryColor
-                                    : kPrimaryColor,
-                                onPressed: () {
-                                  setState(() {
-                                    state = 'message';
-                                  });
-                                },
-                              ),
-                            ],
+                                if (currentUser["role"] == "Babysitter")
+                                  CustomLargeButton(
+                                    minWidth: 100,
+                                    backgroundColor: state == "browse"
+                                        ? kSecondaryColor
+                                        : kPrimaryColor,
+                                    textColor: state == "browse"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                    btnText: "Browse",
+                                    onPressed: () {
+                                      setState(() {
+                                        state = 'browse';
+                                      });
+                                    },
+                                  ),
+                                CustomIconButton(
+                                  icon: Icon(
+                                    Icons.message,
+                                    color: state == "message"
+                                        ? kPrimaryColor
+                                        : kSecondaryColor,
+                                  ),
+                                  minWidth: 50,
+                                  backgroundColor: state == "message"
+                                      ? kSecondaryColor
+                                      : kPrimaryColor,
+                                  onPressed: () {
+                                    setState(() {
+                                      state = 'message';
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         if (state == "default" &&
                             currentUser["role"] == "Babysitter")
                           Column(
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  CustomLargeButton(
-                                    textColor: homestate == "default"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                    backgroundColor: homestate == "default"
-                                        ? kSecondaryColor
-                                        : kPrimaryColor,
-                                    btnText: "Calender",
-                                    minWidth: 100,
-                                    onPressed: () {
-                                      setState(() {
-                                        homestate = "default";
-                                      });
-                                    },
-                                  ),
-                                  CustomLargeButton(
-                                    textColor: homestate == "offered"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                    backgroundColor: homestate == "offered"
-                                        ? kSecondaryColor
-                                        : kPrimaryColor,
-                                    btnText: "Offered",
-                                    minWidth: 100,
-                                    onPressed: () {
-                                      setState(() {
-                                        homestate = "offered";
-                                      });
-                                    },
-                                  ),
-                                  CustomLargeButton(
-                                    textColor: homestate == "applied"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                    backgroundColor: homestate == "applied"
-                                        ? kSecondaryColor
-                                        : kPrimaryColor,
-                                    btnText: "Applied Jobs",
-                                    minWidth: 100,
-                                    onPressed: () {
-                                      setState(() {
-                                        homestate = "applied";
-                                      });
-                                    },
-                                  ),
-                                ],
+                              Card(
+                                elevation: 12,
+                                shadowColor: kSecondaryColor,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    CustomLargeButton(
+                                      textColor: homestate == "default"
+                                          ? kPrimaryColor
+                                          : kSecondaryColor,
+                                      backgroundColor: homestate == "default"
+                                          ? kSecondaryColor
+                                          : kPrimaryColor,
+                                      btnText: "Calender",
+                                      minWidth: 100,
+                                      onPressed: () {
+                                        setState(() {
+                                          homestate = "default";
+                                        });
+                                      },
+                                    ),
+                                    CustomLargeButton(
+                                      textColor: homestate == "offered"
+                                          ? kPrimaryColor
+                                          : kSecondaryColor,
+                                      backgroundColor: homestate == "offered"
+                                          ? kSecondaryColor
+                                          : kPrimaryColor,
+                                      btnText: "Offered",
+                                      minWidth: 100,
+                                      onPressed: () {
+                                        setState(() {
+                                          homestate = "offered";
+                                        });
+                                      },
+                                    ),
+                                    CustomLargeButton(
+                                      textColor: homestate == "applied"
+                                          ? kPrimaryColor
+                                          : kSecondaryColor,
+                                      backgroundColor: homestate == "applied"
+                                          ? kSecondaryColor
+                                          : kPrimaryColor,
+                                      btnText: "Applied Jobs",
+                                      minWidth: 100,
+                                      onPressed: () {
+                                        setState(() {
+                                          homestate = "applied";
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                               if (homestate == "default")
                                 Column(
