@@ -62,7 +62,60 @@ class _ChatScreenState extends State<ChatScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(),
+              StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('users')
+                    .doc(loggedInUser.uid)
+                    .collection(data['userid'].toString())
+                    .orderBy("time")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: kSecondaryColor,
+                      ),
+                    );
+                  } else {
+                    final messages = snapshot.data.docs;
+                    List<MessageBubble> messageBubbles = [];
+                    for (var message in messages) {
+                      final messageText = message.data()["text"];
+                      final sender = message.data()["sender"];
+
+                      //Marks the message to read by the current user.
+                      _firestore
+                          .collection('users')
+                          .doc(data['userid'].toString())
+                          .collection(loggedInUser.uid)
+                          .doc(message.id)
+                          .update({
+                        'hasRead': true,
+                      });
+                      //checks if the message is send by the current user that is logged in
+                      final isMe = message.data()["sender"] == loggedInUser.uid
+                          ? true
+                          : false;
+
+                      final messageBubble = MessageBubble(
+                        sender: sender,
+                        text: messageText,
+                        hasRead: message.data()["hasRead"],
+                        isMe: isMe,
+                      );
+                      messageBubbles.add(messageBubble);
+                    }
+
+                    return Expanded(
+                      child: ListView(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                        children: messageBubbles,
+                      ),
+                    );
+                  }
+                },
+              ),
               Container(
                   decoration: BoxDecoration(
                     border: Border(
@@ -88,24 +141,34 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       TextButton(
                           onPressed: () {
+                            // creates message on the logged in user
                             _firestore
                                 .collection('users')
                                 .doc(loggedInUser.uid)
                                 .collection(data["userid"].toString())
                                 .add({
-                              'message': messageText,
-                              'sender': loggedInUser.uid
-                            });
-                            _firestore
-                                .collection('users')
-                                .doc(data["userid"])
-                                .collection(loggedInUser.uid.toString())
-                                .add({
-                              'message': messageText,
-                              'sender': loggedInUser.uid
-                            });
+                              'text': messageText,
+                              'sender': loggedInUser.uid,
+                              'time': DateTime.now(),
+                              'hasRead': false
+                            }).then((value) => {
+                                      // creates message on the target user
+
+                                      _firestore
+                                          .collection('users')
+                                          .doc(data["userid"])
+                                          .collection(
+                                              loggedInUser.uid.toString())
+                                          .doc(value.id)
+                                          .set({
+                                        'text': messageText,
+                                        'sender': loggedInUser.uid,
+                                        'time': DateTime.now(),
+                                        'hasRead': false
+                                      })
+                                    });
                             setState(() {
-                              messageTextController.text = "";
+                              messageTextController.clear();
                             });
                           },
                           child: Text(
@@ -121,5 +184,53 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ));
+  }
+}
+
+// this styles the message bubble in the screen
+class MessageBubble extends StatelessWidget {
+  //instance of firestore
+  final _firestore = FirebaseFirestore.instance;
+
+  MessageBubble({this.sender, this.text, this.isMe, this.hasRead});
+
+  final String sender, text;
+  final bool isMe, hasRead;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Material(
+            elevation: 10.0,
+            borderRadius: BorderRadius.circular(30),
+            color: isMe ? kSecondaryColor : kPrimaryColor,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+              child: Column(
+                children: [
+                  Text(
+                    text,
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        color: isMe ? kPrimaryColor : kSecondaryColor),
+                  ),
+                  if (isMe)
+                    Icon(
+                      Icons.done_all,
+                      size: 15,
+                      color: hasRead ? Colors.blue : kPrimaryColor,
+                    )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
