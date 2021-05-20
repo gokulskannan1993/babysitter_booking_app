@@ -102,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           margin: EdgeInsets.all(30),
                           height: 75.0,
                           child: Card(
+                            // for the main menu tab
                             elevation: 20,
                             shadowColor: kSecondaryColor,
                             child: Row(

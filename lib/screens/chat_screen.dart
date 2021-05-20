@@ -77,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     );
                   } else {
-                    final messages = snapshot.data.docs;
+                    final messages = snapshot.data.docs.reversed;
                     List<MessageBubble> messageBubbles = [];
                     for (var message in messages) {
                       final messageText = message.data()["text"];
@@ -108,6 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     return Expanded(
                       child: ListView(
+                        reverse: true,
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                         children: messageBubbles,
@@ -189,9 +190,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
 // this styles the message bubble in the screen
 class MessageBubble extends StatelessWidget {
-  //instance of firestore
-  final _firestore = FirebaseFirestore.instance;
-
   MessageBubble({this.sender, this.text, this.isMe, this.hasRead});
 
   final String sender, text;
