@@ -1,3 +1,4 @@
+import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/home_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
@@ -376,7 +377,14 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                             size: 20,
                                             color: Colors.blue,
                                           ),
-                                          onPressed: () {}),
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, ChatScreen.routeName,
+                                                arguments: {
+                                                  'userid': List.from(
+                                                      job["askedBy"])[i]["user"]
+                                                });
+                                          }),
                                     ],
                                   ),
                                 ),

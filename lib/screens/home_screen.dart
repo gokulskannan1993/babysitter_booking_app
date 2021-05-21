@@ -62,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Text("Your Message ?"),
             content: TextField(
               controller: tController,
+              maxLength: 20,
             ),
             actions: [
               CustomLargeButton(
