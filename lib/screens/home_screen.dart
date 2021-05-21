@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
@@ -13,7 +11,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -31,7 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
   User loggedInUser;
   String state = 'default', homestate = "default";
 
-  String selectedDate = DateFormat('d MMMM, yyyy').format(DateTime.now());
+  DateTime selectedDate = DateTime.now();
+
+  String selectedDateString = DateFormat('d MMMM, yyyy').format(DateTime.now());
 
   @override
   void initState() {
@@ -251,11 +250,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Column(
                                   children: [
                                     Card(
+                                      // calendar view
                                       child: TableCalendar(
+                                        initialSelectedDay: selectedDate,
                                         onDaySelected: (day, events, holidays) {
-                                          selectedDate =
-                                              DateFormat('d MMMM, yyyy')
-                                                  .format(day);
+                                          selectedDate = day;
+                                          setState(() {
+                                            selectedDateString =
+                                                DateFormat('d MMMM, yyyy')
+                                                    .format(day);
+                                          });
                                         },
                                         initialCalendarFormat:
                                             CalendarFormat.week,
@@ -287,34 +291,136 @@ class _HomeScreenState extends State<HomeScreen> {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
                                             // if the snapshot is loading
-                                            return CircularProgressIndicator();
+                                            return Text("");
                                           } else {
                                             Map<String, dynamic> job =
                                                 snapshot.data.data();
-                                            return Card(
-                                              child: FutureBuilder(
-                                                //fetches the creator details
-                                                future: _firestore
-                                                    .collection('users')
-                                                    .doc(job['creator'])
-                                                    .get(),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    // if the snapshot is loading
-                                                    return CircularProgressIndicator();
-                                                  } else {
-                                                    Map<String, dynamic>
-                                                        creator =
-                                                        snapshot.data.data();
-                                                    return Container(
-                                                      child: Text("Hello"),
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            );
+                                            if (job['date'] ==
+                                                selectedDateString) {
+                                              return Card(
+                                                child: Container(
+                                                  padding: EdgeInsets.all(20.0),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      border: Border.all(
+                                                          color:
+                                                              kSecondaryColor)),
+                                                  child: FutureBuilder(
+                                                    //fetches the creator details
+                                                    future: _firestore
+                                                        .collection('users')
+                                                        .doc(job['creator'])
+                                                        .get(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .waiting) {
+                                                        // if the snapshot is loading
+                                                        return Text("");
+                                                      } else {
+                                                        Map<String, dynamic>
+                                                            creator = snapshot
+                                                                .data
+                                                                .data();
+                                                        return Container(
+                                                            child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                CircleAvatar(
+                                                                  radius: 20,
+                                                                  backgroundImage:
+                                                                      NetworkImage(
+                                                                          creator[
+                                                                              "imageUrl"]),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Column(
+                                                                  children: [
+                                                                    Text(
+                                                                      creator[
+                                                                          "name"],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              15),
+                                                                    ),
+                                                                    Text(
+                                                                      "Created by",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              10),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                IconButton(
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .message,
+                                                                      color:
+                                                                          kSecondaryColor,
+                                                                      size: 20,
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pushNamed(
+                                                                          context,
+                                                                          ChatScreen.routeName,
+                                                                          arguments: {
+                                                                            'userid':
+                                                                                job["creator"]
+                                                                          });
+                                                                    })
+                                                              ],
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            ListTile(
+                                                              title: Text(
+                                                                  "Number of Children: ${List.from(job['children']).length}"),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            ListTile(
+                                                              title: Text(
+                                                                  "Address: ${creator['street']},  ${creator['county']}"),
+                                                              subtitle: Text(
+                                                                  "From ${job['from']} to ${job['to']}"),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            ListTile(
+                                                              title: Text(
+                                                                  "Status: ${job['status']}"),
+                                                            ),
+                                                          ],
+                                                        ));
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              // if there is no jobs for the day
+                                              return Text("");
+                                            }
                                           }
                                         },
                                       ),
