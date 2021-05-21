@@ -73,57 +73,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               child: Container(
                 child: Column(
                   children: [
-                    FutureBuilder(
-                      future: _firestore
-                          .collection("users")
-                          .doc(job["creator"])
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Text("Loading...");
-                        } else {
-                          Map<String, dynamic> userData = snapshot.data.data();
-                          return Container(
-                            padding: EdgeInsets.all(20),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, UserScreen.routeName,
-                                    arguments: {
-                                      "userid": snapshot.data.id,
-                                    });
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage:
-                                        NetworkImage(userData["imageUrl"]),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        "${userData["name"]}",
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      Text(
-                                        "Created by",
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
                     if (job["assignedTo"] != "")
                       FutureBuilder(
                         future: _firestore

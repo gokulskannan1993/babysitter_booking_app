@@ -66,7 +66,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 stream: _firestore
                     .collection('users')
                     .doc(loggedInUser.uid)
-                    .collection(data['userid'].toString())
+                    .collection('chats')
+                    .doc(data['userid'].toString())
+                    .collection('data')
                     .orderBy("time")
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -87,7 +89,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore
                           .collection('users')
                           .doc(data['userid'].toString())
-                          .collection(loggedInUser.uid)
+                          .collection('chats')
+                          .doc(loggedInUser.uid)
+                          .collection('data')
                           .doc(message.id)
                           .update({
                         'hasRead': true,
@@ -146,7 +150,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             _firestore
                                 .collection('users')
                                 .doc(loggedInUser.uid)
-                                .collection(data["userid"].toString())
+                                .collection('chats')
+                                .doc(data["userid"].toString())
+                                .collection('data')
                                 .add({
                               'text': messageText,
                               'sender': loggedInUser.uid,
@@ -154,12 +160,24 @@ class _ChatScreenState extends State<ChatScreen> {
                               'hasRead': false
                             }).then((value) => {
                                       // creates message on the target user
-
+                                      _firestore
+                                          .collection('users')
+                                          .doc(loggedInUser.uid)
+                                          .collection('chats')
+                                          .doc(data["userid"].toString())
+                                          .set({'type': "messages"}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])
-                                          .collection(
-                                              loggedInUser.uid.toString())
+                                          .collection('chats')
+                                          .doc(loggedInUser.uid.toString())
+                                          .set({'type': "messages"}),
+                                      _firestore
+                                          .collection('users')
+                                          .doc(data["userid"])
+                                          .collection('chats')
+                                          .doc(loggedInUser.uid.toString())
+                                          .collection('data')
                                           .doc(value.id)
                                           .set({
                                         'text': messageText,

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
@@ -10,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -89,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 // if the snapshot is loading
-                return Text("Loading...");
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               } else {
                 //Mapping all the fields
                 Map<String, dynamic> currentUser = snapshot.data.data();
@@ -98,11 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     child: Column(
                       children: [
+                        //for the main menu
                         Container(
                           margin: EdgeInsets.all(30),
                           height: 75.0,
                           child: Card(
-                            // for the main menu tab
                             elevation: 20,
                             shadowColor: kSecondaryColor,
                             child: Row(
@@ -177,6 +183,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+
+                        //home screen of babysitter
                         if (state == "default" &&
                             currentUser["role"] == "Babysitter")
                           Column(
@@ -683,6 +691,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
                             ],
                           )
+
+                        //home screen of parent
                         else if (state == "default" &&
                             currentUser["role"] == "Parent")
                           Container(
@@ -706,6 +716,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           )
+
+                        //browse jobs
                         else if (state == "browse")
                           Container(
                             child: Card(
@@ -807,12 +819,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     Column(
                                                                       children: [
                                                                         Text(
-                                                                          "${userData["name"]}",
+                                                                          userData[
+                                                                              "name"],
                                                                           style:
                                                                               TextStyle(fontSize: 15),
                                                                         ),
                                                                         Text(
-                                                                          "Created by",
+                                                                          userData[
+                                                                              "county"],
                                                                           style:
                                                                               TextStyle(fontSize: 10),
                                                                         ),
@@ -899,7 +913,124 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               ),
                             ),
-                          ),
+                          )
+
+                        //message part
+                        else if (state == "message")
+                          Container(
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: _firestore
+                                  .collection('users')
+                                  .doc(loggedInUser.uid)
+                                  .collection('chats')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else {
+                                  List<Card> messageCards = [];
+                                  final users = snapshot.data.docs.reversed;
+                                  for (var user in users) {
+                                    final messageCard = Card(
+                                      child: FutureBuilder(
+                                        future: _firestore
+                                            .collection('users')
+                                            .doc(user.id)
+                                            .get(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            // if the snapshot is loading
+                                            return CircularProgressIndicator();
+                                          } else {
+                                            Map<String, dynamic> messageUser =
+                                                snapshot.data.data();
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  GestureDetector(
+                                                    child: CircleAvatar(
+                                                      radius: 30,
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                              messageUser[
+                                                                  "imageUrl"]),
+                                                    ),
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          UserScreen.routeName,
+                                                          arguments: {
+                                                            'userid': user.id
+                                                          });
+                                                    },
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20,
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Text(
+                                                        messageUser["name"],
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color:
+                                                                kSecondaryColor),
+                                                      ),
+                                                      Text(
+                                                        messageUser["county"],
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color:
+                                                                kMediumDarkText),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20,
+                                                  ),
+                                                  IconButton(
+                                                      icon: Icon(
+                                                        Icons.arrow_forward,
+                                                        size: 25,
+                                                        color: kSecondaryColor,
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            ChatScreen
+                                                                .routeName,
+                                                            arguments: {
+                                                              'userid': user.id
+                                                            });
+                                                      })
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    );
+                                    messageCards.add(messageCard);
+                                  }
+                                  return Container(
+                                    child: Column(
+                                      children: messageCards,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          )
                       ],
                     ),
                   ),
