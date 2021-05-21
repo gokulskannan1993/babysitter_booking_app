@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "home_screen";
@@ -29,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
   String state = 'default', homestate = "default";
+
+  String selectedDate = DateFormat('d MMMM, yyyy').format(DateTime.now());
 
   @override
   void initState() {
@@ -247,8 +250,74 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (homestate == "default")
                                 Column(
                                   children: [
-                                    CalenderForBabySitter(
-                                        controller: _controller),
+                                    Card(
+                                      child: TableCalendar(
+                                        onDaySelected: (day, events, holidays) {
+                                          selectedDate =
+                                              DateFormat('d MMMM, yyyy')
+                                                  .format(day);
+                                        },
+                                        initialCalendarFormat:
+                                            CalendarFormat.week,
+                                        calendarController: _controller,
+                                        calendarStyle: CalendarStyle(
+                                            todayColor: kMediumDarkText,
+                                            selectedColor: kSecondaryColor),
+                                        headerStyle: HeaderStyle(
+                                            centerHeaderTitle: true,
+                                            formatButtonTextStyle: TextStyle(
+                                                color: Colors.transparent),
+                                            formatButtonDecoration:
+                                                BoxDecoration(
+                                                    color: Colors.transparent,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20))),
+                                      ),
+                                    ),
+                                    for (var jobID
+                                        in currentUser["assignedJobs"])
+                                      FutureBuilder(
+                                        //fetches the job
+                                        future: _firestore
+                                            .collection('jobs')
+                                            .doc(jobID)
+                                            .get(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            // if the snapshot is loading
+                                            return CircularProgressIndicator();
+                                          } else {
+                                            Map<String, dynamic> job =
+                                                snapshot.data.data();
+                                            return Card(
+                                              child: FutureBuilder(
+                                                //fetches the creator details
+                                                future: _firestore
+                                                    .collection('users')
+                                                    .doc(job['creator'])
+                                                    .get(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    // if the snapshot is loading
+                                                    return CircularProgressIndicator();
+                                                  } else {
+                                                    Map<String, dynamic>
+                                                        creator =
+                                                        snapshot.data.data();
+                                                    return Container(
+                                                      child: Text("Hello"),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                   ],
                                 )
                               else if (homestate == "offered")
@@ -501,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 if (snapshot.connectionState ==
                                                     ConnectionState.waiting) {
                                                   // if the snapshot is loading
-                                                  return Text("Loading...");
+                                                  return CircularProgressIndicator();
                                                 } else {
                                                   Map<String, dynamic> job =
                                                       snapshot.data.data();
@@ -1138,15 +1207,15 @@ class CalenderForBabySitter extends StatelessWidget {
     return Card(
       child: TableCalendar(
         onDaySelected: (day, events, holidays) {},
-        initialCalendarFormat: CalendarFormat.twoWeeks,
+        initialCalendarFormat: CalendarFormat.week,
         calendarController: _controller,
         calendarStyle: CalendarStyle(
             todayColor: kMediumDarkText, selectedColor: kSecondaryColor),
         headerStyle: HeaderStyle(
             centerHeaderTitle: true,
-            formatButtonTextStyle: TextStyle(color: kPrimaryColor),
+            formatButtonTextStyle: TextStyle(color: Colors.transparent),
             formatButtonDecoration: BoxDecoration(
-                color: kSecondaryColor,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(20))),
       ),
     );
