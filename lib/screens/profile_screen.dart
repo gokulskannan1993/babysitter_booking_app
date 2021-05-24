@@ -93,7 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Text("Loading...");
             } else {
               Map<String, dynamic> currentUser = snapshot.data.data();
-              print(currentUser);
 
               return ListView(children: [
                 Container(

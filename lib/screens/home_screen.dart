@@ -28,6 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
   User loggedInUser;
   String state = 'default', homestate = "default";
 
+  // to customize the calender with dates have events must be highlighted
+  Map<DateTime, List<String>> currentEvents;
+
   DateTime selectedDate = DateTime.now();
 
   String selectedDateString = DateFormat('d MMMM, yyyy').format(DateTime.now());
@@ -39,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //checks for logged in user
-  void getCurrentUser() {
+  getCurrentUser() {
     try {
       final user = _auth.currentUser;
       if (user != null) {
@@ -49,6 +52,27 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  //get unread messages of a user
+  // ignore: missing_return
+  Future<int> getUnreadMessages(String id) async {
+    int count = 0;
+
+    await for (var snapshots in _firestore
+        .collection('users')
+        .doc(loggedInUser.uid)
+        .collection('chats')
+        .doc(id)
+        .collection('data')
+        .snapshots()) {
+      for (var snapshot in snapshots.docs) {
+        if (!snapshot.data()["hasRead"]) {
+          count++;
+        }
+      }
+      return count;
     }
   }
 
@@ -250,36 +274,56 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (homestate == "default")
                                 Column(
                                   children: [
-                                    Card(
-                                      // calendar view
-                                      child: TableCalendar(
-                                        initialSelectedDay: selectedDate,
-                                        onDaySelected: (day, events, holidays) {
-                                          selectedDate = day;
-                                          setState(() {
-                                            selectedDateString =
-                                                DateFormat('d MMMM, yyyy')
-                                                    .format(day);
-                                          });
-                                        },
-                                        initialCalendarFormat:
-                                            CalendarFormat.week,
-                                        calendarController: _controller,
-                                        calendarStyle: CalendarStyle(
-                                            todayColor: kMediumDarkText,
-                                            selectedColor: kSecondaryColor),
-                                        headerStyle: HeaderStyle(
-                                            centerHeaderTitle: true,
-                                            formatButtonTextStyle: TextStyle(
-                                                color: Colors.transparent),
-                                            formatButtonDecoration:
-                                                BoxDecoration(
-                                                    color: Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20))),
-                                      ),
-                                    ),
+                                    StreamBuilder<QuerySnapshot>(
+                                        stream: _firestore
+                                            .collection('jobs')
+                                            .where('assignedTo',
+                                                isEqualTo: loggedInUser.uid)
+                                            .snapshots(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            currentEvents = {};
+                                            final jobs = snapshot.data.docs;
+                                            for (var job in jobs) {
+                                              DateTime date = DateFormat(
+                                                      'd MMMM, yyyy', 'en_US')
+                                                  .parse(job.data()["date"]);
+
+                                              if (currentEvents[date] == null) {
+                                                currentEvents[date] = [];
+                                              }
+                                              currentEvents[date]
+                                                  .add(job.data()["date"]);
+                                            }
+                                          }
+                                          return Card(
+                                            // calendar view
+                                            child: TableCalendar(
+                                              events: currentEvents,
+                                              initialSelectedDay: selectedDate,
+                                              onDaySelected:
+                                                  (day, events, holidays) {
+                                                selectedDate = day;
+                                                setState(() {
+                                                  selectedDateString =
+                                                      DateFormat('d MMMM, yyyy')
+                                                          .format(day);
+                                                });
+                                              },
+                                              initialCalendarFormat:
+                                                  CalendarFormat.week,
+                                              calendarController: _controller,
+                                              calendarStyle: CalendarStyle(
+                                                  todayColor: kMediumDarkText,
+                                                  selectedColor:
+                                                      kSecondaryColor),
+                                              headerStyle: HeaderStyle(
+                                                centerHeaderTitle: true,
+                                                formatButtonVisible: false,
+                                              ),
+                                            ),
+                                          );
+                                        }),
                                     for (var jobID
                                         in currentUser["assignedJobs"])
                                       FutureBuilder(
