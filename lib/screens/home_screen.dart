@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // to customize the calender with dates have events must be highlighted
   Map<DateTime, List<String>> currentEvents;
+  Map unread = {};
 
   DateTime selectedDate = DateTime.now();
 
@@ -55,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  //get unread messages of a user
   // ignore: missing_return
   Future<int> getUnreadMessages(String id) async {
     int count = 0;
@@ -340,6 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           } else {
                                             Map<String, dynamic> job =
                                                 snapshot.data.data();
+
                                             if (job['date'] ==
                                                 selectedDateString) {
                                               return Card(
@@ -371,6 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             creator = snapshot
                                                                 .data
                                                                 .data();
+
                                                         return Container(
                                                             child: Column(
                                                           mainAxisAlignment:
@@ -382,12 +385,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   MainAxisAlignment
                                                                       .spaceAround,
                                                               children: [
-                                                                CircleAvatar(
-                                                                  radius: 20,
-                                                                  backgroundImage:
-                                                                      NetworkImage(
-                                                                          creator[
-                                                                              "imageUrl"]),
+                                                                GestureDetector(
+                                                                  child:
+                                                                      CircleAvatar(
+                                                                    radius: 20,
+                                                                    backgroundImage:
+                                                                        NetworkImage(
+                                                                            creator["imageUrl"]),
+                                                                  ),
+                                                                  onTap: () {
+                                                                    Navigator.pushNamed(
+                                                                        context,
+                                                                        UserScreen
+                                                                            .routeName,
+                                                                        arguments: {
+                                                                          'userid':
+                                                                              job['creator']
+                                                                        });
+                                                                  },
                                                                 ),
                                                                 SizedBox(
                                                                   width: 10,
@@ -412,23 +427,67 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 SizedBox(
                                                                   width: 10,
                                                                 ),
-                                                                IconButton(
-                                                                    icon: Icon(
-                                                                      Icons
-                                                                          .message,
-                                                                      color:
-                                                                          kSecondaryColor,
-                                                                      size: 20,
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pushNamed(
-                                                                          context,
-                                                                          ChatScreen.routeName,
-                                                                          arguments: {
-                                                                            'userid':
-                                                                                job["creator"]
-                                                                          });
+                                                                FutureBuilder(
+                                                                    future: _firestore
+                                                                        .collection(
+                                                                            'users')
+                                                                        .doc(loggedInUser
+                                                                            .uid)
+                                                                        .collection(
+                                                                            'chats')
+                                                                        .doc(job[
+                                                                            'creator'])
+                                                                        .get(),
+                                                                    builder:
+                                                                        (context,
+                                                                            snapshot) {
+                                                                      if (snapshot
+                                                                              .connectionState ==
+                                                                          ConnectionState
+                                                                              .waiting) {
+                                                                        // if the snapshot is loading
+                                                                        return Text(
+                                                                            "Loading...");
+                                                                      } else {
+                                                                        Map<String,
+                                                                                dynamic>
+                                                                            chatData =
+                                                                            snapshot.data.data();
+                                                                        if (chatData[
+                                                                            "unread"]) {
+                                                                          return Stack(
+                                                                            children: [
+                                                                              IconButton(
+                                                                                  icon: Icon(
+                                                                                    Icons.message,
+                                                                                    color: kSecondaryColor,
+                                                                                    size: 25,
+                                                                                  ),
+                                                                                  onPressed: () {
+                                                                                    Navigator.pushNamed(context, ChatScreen.routeName, arguments: {
+                                                                                      'userid': job["creator"]
+                                                                                    });
+                                                                                  }),
+                                                                              CircleAvatar(
+                                                                                radius: 8,
+                                                                                backgroundColor: Colors.red,
+                                                                              ),
+                                                                            ],
+                                                                          );
+                                                                        } else {
+                                                                          return IconButton(
+                                                                              icon: Icon(
+                                                                                Icons.message,
+                                                                                color: kSecondaryColor,
+                                                                                size: 25,
+                                                                              ),
+                                                                              onPressed: () {
+                                                                                Navigator.pushNamed(context, ChatScreen.routeName, arguments: {
+                                                                                  'userid': job["creator"]
+                                                                                });
+                                                                              });
+                                                                        }
+                                                                      }
                                                                     })
                                                               ],
                                                             ),
@@ -437,19 +496,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                             ListTile(
                                                               title: Text(
-                                                                  "Number of Children: ${List.from(job['children']).length}"),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            ListTile(
-                                                              title: Text(
-                                                                  "Address: ${creator['street']},  ${creator['county']}"),
-                                                              subtitle: Text(
                                                                   "From ${job['from']} to ${job['to']}"),
+                                                              subtitle: Text(
+                                                                  "${creator['street']},  ${creator['county']}"),
                                                             ),
                                                             SizedBox(
-                                                              height: 10,
+                                                              height: 5,
                                                             ),
                                                             ListTile(
                                                               title: Text(
@@ -1218,21 +1270,78 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   SizedBox(
                                                     width: 20,
                                                   ),
-                                                  IconButton(
-                                                      icon: Icon(
-                                                        Icons.arrow_forward,
-                                                        size: 25,
-                                                        color: kSecondaryColor,
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            ChatScreen
-                                                                .routeName,
-                                                            arguments: {
-                                                              'userid': user.id
-                                                            });
-                                                      })
+                                                  FutureBuilder(
+                                                      future: _firestore
+                                                          .collection('users')
+                                                          .doc(loggedInUser.uid)
+                                                          .collection('chats')
+                                                          .doc(user.id)
+                                                          .get(),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        if (snapshot
+                                                                .connectionState ==
+                                                            ConnectionState
+                                                                .waiting) {
+                                                          // if the snapshot is loading
+                                                          return Text(
+                                                              "Loading...");
+                                                        } else {
+                                                          Map<String, dynamic>
+                                                              chatData =
+                                                              snapshot.data
+                                                                  .data();
+                                                          if (chatData[
+                                                              "unread"]) {
+                                                            return Stack(
+                                                              children: [
+                                                                IconButton(
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .message,
+                                                                      color:
+                                                                          kSecondaryColor,
+                                                                      size: 25,
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pushNamed(
+                                                                          context,
+                                                                          ChatScreen.routeName,
+                                                                          arguments: {
+                                                                            'userid':
+                                                                                user.id
+                                                                          });
+                                                                    }),
+                                                                CircleAvatar(
+                                                                  radius: 8,
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .red,
+                                                                ),
+                                                              ],
+                                                            );
+                                                          } else {
+                                                            return IconButton(
+                                                                icon: Icon(
+                                                                  Icons.message,
+                                                                  color:
+                                                                      kSecondaryColor,
+                                                                  size: 25,
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.pushNamed(
+                                                                      context,
+                                                                      ChatScreen
+                                                                          .routeName,
+                                                                      arguments: {
+                                                                        'userid':
+                                                                            user.id
+                                                                      });
+                                                                });
+                                                          }
+                                                        }
+                                                      }),
                                                 ],
                                               ),
                                             );

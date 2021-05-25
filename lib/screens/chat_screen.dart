@@ -96,6 +96,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           .update({
                         'hasRead': true,
                       });
+                      _firestore
+                          .collection('users')
+                          .doc(loggedInUser.uid)
+                          .collection('chats')
+                          .doc(data["userid"].toString())
+                          .update({'unread': false});
                       //checks if the message is send by the current user that is logged in
                       final isMe = message.data()["sender"] == loggedInUser.uid
                           ? true
@@ -165,13 +171,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                           .doc(loggedInUser.uid)
                                           .collection('chats')
                                           .doc(data["userid"].toString())
-                                          .set({'type': "messages"}),
+                                          .update({"type": 'message'}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])
                                           .collection('chats')
                                           .doc(loggedInUser.uid.toString())
-                                          .set({'type': "messages"}),
+                                          .update({'unread': true}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])
