@@ -11,7 +11,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:synchronized/synchronized.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -54,26 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  // ignore: missing_return
-  Future<int> getUnreadMessages(String id) async {
-    int count = 0;
-
-    await for (var snapshots in _firestore
-        .collection('users')
-        .doc(loggedInUser.uid)
-        .collection('chats')
-        .doc(id)
-        .collection('data')
-        .snapshots()) {
-      for (var snapshot in snapshots.docs) {
-        if (!snapshot.data()["hasRead"]) {
-          count++;
-        }
-      }
-      return count;
     }
   }
 
