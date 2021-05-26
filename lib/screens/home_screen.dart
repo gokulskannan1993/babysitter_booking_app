@@ -324,6 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             if (job['date'] ==
                                                 selectedDateString) {
                                               return Card(
+                                                elevation: 10,
                                                 child: Container(
                                                   padding: EdgeInsets.all(20.0),
                                                   decoration: BoxDecoration(

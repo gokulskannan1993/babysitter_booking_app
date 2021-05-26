@@ -171,13 +171,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                           .doc(loggedInUser.uid)
                                           .collection('chats')
                                           .doc(data["userid"].toString())
-                                          .update({"type": 'message'}),
+                                          .set({'unread': true}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])
                                           .collection('chats')
                                           .doc(loggedInUser.uid.toString())
-                                          .update({'unread': true}),
+                                          .set({'unread': true}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])
