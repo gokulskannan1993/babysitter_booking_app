@@ -6,12 +6,14 @@ import 'package:babysitter_booking_app/screens/map_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_edit_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/register_screen.dart';
+import 'package:babysitter_booking_app/screens/review_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +26,7 @@ class BabysitterBookingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       //Routing to Different Screens
-      initialRoute: WelcomeScreen.routeName,
+      initialRoute: ReviewScreen.routeName,
       routes: {
         WelcomeScreen.routeName: (context) => WelcomeScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
@@ -38,6 +40,7 @@ class BabysitterBookingApp extends StatelessWidget {
         ProfileEditScreen.routeName: (context) => ProfileEditScreen(),
         JobDetailScreen.routeName: (context) => JobDetailScreen(),
         ChatScreen.routeName: (context) => ChatScreen(),
+        ReviewScreen.routeName: (context) => ReviewScreen(),
       },
     );
   }
