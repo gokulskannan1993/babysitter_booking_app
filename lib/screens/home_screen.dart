@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "home_screen";
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  //create the message dialogue for applying for a job
   Future<String> createMessageInput(BuildContext context) {
     String message = "Hi I would like to apply for this job";
     TextEditingController tController = TextEditingController();
@@ -88,6 +90,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
+  }
+
+  //Show location on google map
+  Future<void> launchLocation(String address) async {
+    if (await canLaunch("https://www.google.com/maps/search")) {
+      final bool nativeApp = await launch(
+          "https://www.google.com/maps/search/${address}",
+          forceWebView: false,
+          universalLinksOnly: true,
+          forceSafariVC: false);
+      if (!nativeApp) {
+        await launch("https://www.google.com/maps/search/${address}",
+            forceWebView: true, forceSafariVC: true);
+      }
+    }
   }
 
   @override
@@ -486,6 +503,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ListTile(
                                                               title: Text(
                                                                   "Status: ${job['status']}"),
+                                                            ),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                CustomLargeButton(
+                                                                  textColor:
+                                                                      kPrimaryColor,
+                                                                  backgroundColor:
+                                                                      kSecondaryColor,
+                                                                  btnText:
+                                                                      "Show on Map",
+                                                                  onPressed:
+                                                                      () {
+                                                                    launchLocation(
+                                                                        "${creator['street']},  ${creator['county']}");
+                                                                  },
+                                                                )
+                                                              ],
                                                             ),
                                                           ],
                                                         ));
