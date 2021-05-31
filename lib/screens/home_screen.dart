@@ -96,12 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> launchLocation(String address) async {
     if (await canLaunch("https://www.google.com/maps/search")) {
       final bool nativeApp = await launch(
-          "https://www.google.com/maps/search/${address}",
+          "https://www.google.com/maps/search/$address",
           forceWebView: false,
           universalLinksOnly: true,
           forceSafariVC: false);
       if (!nativeApp) {
-        await launch("https://www.google.com/maps/search/${address}",
+        await launch("https://www.google.com/maps/search/$address",
             forceWebView: true, forceSafariVC: true);
       }
     }
@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             if (job['date'] ==
                                                 selectedDateString) {
                                               return Card(
-                                                elevation: 10,
+                                                elevation: 20,
                                                 child: Container(
                                                   padding: EdgeInsets.all(20.0),
                                                   decoration: BoxDecoration(
@@ -350,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               10),
                                                       border: Border.all(
                                                           color:
-                                                              kSecondaryColor)),
+                                                              kPrimaryColor)),
                                                   child: FutureBuilder(
                                                     //fetches the creator details
                                                     future: _firestore
@@ -499,10 +499,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                             SizedBox(
                                                               height: 5,
-                                                            ),
-                                                            ListTile(
-                                                              title: Text(
-                                                                  "Status: ${job['status']}"),
                                                             ),
                                                             Row(
                                                               mainAxisAlignment:
@@ -1218,154 +1214,194 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return Center(
                                       child: CircularProgressIndicator());
                                 } else {
-                                  List<Card> messageCards = [];
+                                  List<GestureDetector> messageCards = [];
                                   final users = snapshot.data.docs.reversed;
                                   for (var user in users) {
-                                    final messageCard = Card(
-                                      child: FutureBuilder(
-                                        future: _firestore
-                                            .collection('users')
-                                            .doc(user.id)
-                                            .get(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            // if the snapshot is loading
-                                            return CircularProgressIndicator();
-                                          } else {
-                                            Map<String, dynamic> messageUser =
-                                                snapshot.data.data();
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  GestureDetector(
-                                                    child: CircleAvatar(
-                                                      radius: 30,
-                                                      backgroundImage:
-                                                          NetworkImage(
-                                                              messageUser[
-                                                                  "imageUrl"]),
-                                                    ),
-                                                    onTap: () {
-                                                      Navigator.pushNamed(
-                                                          context,
-                                                          UserScreen.routeName,
-                                                          arguments: {
-                                                            'userid': user.id
-                                                          });
-                                                    },
-                                                  ),
-                                                  SizedBox(
-                                                    width: 20,
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Text(
-                                                        messageUser["name"],
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            color:
-                                                                kSecondaryColor),
-                                                      ),
-                                                      Text(
-                                                        messageUser["county"],
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            color:
-                                                                kMediumDarkText),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    width: 20,
-                                                  ),
-                                                  FutureBuilder(
-                                                      future: _firestore
-                                                          .collection('users')
-                                                          .doc(loggedInUser.uid)
-                                                          .collection('chats')
-                                                          .doc(user.id)
-                                                          .get(),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        if (snapshot
-                                                                .connectionState ==
-                                                            ConnectionState
-                                                                .waiting) {
-                                                          // if the snapshot is loading
-                                                          return Text(
-                                                              "Loading...");
-                                                        } else {
-                                                          Map<String, dynamic>
-                                                              chatData =
-                                                              snapshot.data
-                                                                  .data();
-                                                          if (chatData[
-                                                              "unread"]) {
-                                                            return Stack(
+                                    final messageCard = GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, ChatScreen.routeName,
+                                            arguments: {'userid': user.id});
+                                      },
+                                      child: Card(
+                                        child: FutureBuilder(
+                                          future: _firestore
+                                              .collection('users')
+                                              .doc(user.id)
+                                              .get(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              // if the snapshot is loading
+                                              return CircularProgressIndicator();
+                                            } else {
+                                              Map<String, dynamic> messageUser =
+                                                  snapshot.data.data();
+                                              return FutureBuilder<
+                                                      QuerySnapshot>(
+                                                  future: _firestore
+                                                      .collection("users")
+                                                      .doc(loggedInUser.uid)
+                                                      .collection("chats")
+                                                      .doc(user.id)
+                                                      .collection("data")
+                                                      .orderBy("time",
+                                                          descending: true)
+                                                      .get(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      // if the snapshot is loading
+                                                      return Text("Loading...");
+                                                    } else {
+                                                      Map<String, dynamic>
+                                                          latestMessage =
+                                                          snapshot
+                                                              .data.docs.first
+                                                              .data();
+                                                      String date = DateFormat(
+                                                              'dd MMMM, yyyy')
+                                                          .format(latestMessage[
+                                                                  "time"]
+                                                              .toDate());
+
+                                                      String time = DateFormat(
+                                                              'hh:mm a')
+                                                          .format(latestMessage[
+                                                                  "time"]
+                                                              .toDate());
+
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(20.0),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            GestureDetector(
+                                                              child:
+                                                                  FutureBuilder(
+                                                                future: _firestore
+                                                                    .collection(
+                                                                        'users')
+                                                                    .doc(loggedInUser
+                                                                        .uid)
+                                                                    .collection(
+                                                                        'chats')
+                                                                    .doc(
+                                                                        user.id)
+                                                                    .get(),
+                                                                builder: (context,
+                                                                    snapshot) {
+                                                                  if (snapshot
+                                                                          .connectionState ==
+                                                                      ConnectionState
+                                                                          .waiting) {
+                                                                    // if the snapshot is loading
+                                                                    return Text(
+                                                                        "Loading...");
+                                                                  } else {
+                                                                    Map<String,
+                                                                            dynamic>
+                                                                        chatData =
+                                                                        snapshot
+                                                                            .data
+                                                                            .data();
+                                                                    return Stack(
+                                                                        children: [
+                                                                          CircleAvatar(
+                                                                            radius:
+                                                                                30,
+                                                                            backgroundImage:
+                                                                                NetworkImage(messageUser["imageUrl"]),
+                                                                          ),
+                                                                          if (chatData[
+                                                                              "unread"])
+                                                                            CircleAvatar(
+                                                                              radius: 8,
+                                                                              backgroundColor: Colors.red,
+                                                                            ),
+                                                                        ]);
+                                                                  }
+                                                                },
+                                                              ),
+                                                              onTap: () {
+                                                                Navigator.pushNamed(
+                                                                    context,
+                                                                    UserScreen
+                                                                        .routeName,
+                                                                    arguments: {
+                                                                      'userid':
+                                                                          user.id
+                                                                    });
+                                                              },
+                                                            ),
+                                                            SizedBox(
+                                                              width: 20,
+                                                            ),
+                                                            Column(
                                                               children: [
-                                                                IconButton(
-                                                                    icon: Icon(
-                                                                      Icons
-                                                                          .message,
+                                                                SizedBox(
+                                                                  height: 10,
+                                                                ),
+                                                                Text(
+                                                                  messageUser[
+                                                                      "name"],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
                                                                       color:
-                                                                          kSecondaryColor,
-                                                                      size: 25,
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pushNamed(
-                                                                          context,
-                                                                          ChatScreen.routeName,
-                                                                          arguments: {
-                                                                            'userid':
-                                                                                user.id
-                                                                          });
-                                                                    }),
-                                                                CircleAvatar(
-                                                                  radius: 8,
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .red,
+                                                                          kSecondaryColor),
+                                                                ),
+                                                                Text(
+                                                                  latestMessage[
+                                                                      "text"],
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color:
+                                                                          kMediumDarkText),
                                                                 ),
                                                               ],
-                                                            );
-                                                          } else {
-                                                            return IconButton(
-                                                                icon: Icon(
-                                                                  Icons.message,
-                                                                  color:
-                                                                      kSecondaryColor,
-                                                                  size: 25,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 20,
+                                                            ),
+                                                            Column(
+                                                              children: [
+                                                                Text(
+                                                                  time,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color:
+                                                                          kSecondaryColor),
                                                                 ),
-                                                                onPressed: () {
-                                                                  Navigator.pushNamed(
-                                                                      context,
-                                                                      ChatScreen
-                                                                          .routeName,
-                                                                      arguments: {
-                                                                        'userid':
-                                                                            user.id
-                                                                      });
-                                                                });
-                                                          }
-                                                        }
-                                                      }),
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        },
+                                                                Text(
+                                                                  date,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: Colors
+                                                                          .black54),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    }
+                                                  });
+                                            }
+                                          },
+                                        ),
                                       ),
                                     );
+                                    ;
                                     messageCards.add(messageCard);
                                   }
                                   return Container(

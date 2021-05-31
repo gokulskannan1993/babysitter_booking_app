@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:intl/intl.dart';
 
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
@@ -84,6 +85,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     for (var message in messages) {
                       final messageText = message.data()["text"];
                       final sender = message.data()["sender"];
+                      final date = DateFormat('dd MMMM, yyyy')
+                          .format((message.data()["time"].toDate()));
+                      final time = DateFormat('hh:mm a')
+                          .format((message.data()["time"].toDate()));
 
                       //Marks the message to read by the current user.
                       _firestore
@@ -112,6 +117,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         text: messageText,
                         hasRead: message.data()["hasRead"],
                         isMe: isMe,
+                        date: date,
+                        time: time,
                       );
                       messageBubbles.add(messageBubble);
                     }
@@ -214,9 +221,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
 // this styles the message bubble in the screen
 class MessageBubble extends StatelessWidget {
-  MessageBubble({this.sender, this.text, this.isMe, this.hasRead});
+  MessageBubble(
+      {this.sender, this.text, this.isMe, this.hasRead, this.date, this.time});
 
-  final String sender, text;
+  final String sender, text, time, date;
   final bool isMe, hasRead;
 
   @override
@@ -227,9 +235,24 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
+          Text(
+            "$time  $date",
+            style: TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+          SizedBox(
+            height: 4,
+          ),
           Material(
             elevation: 10.0,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: isMe
+                ? BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30))
+                : BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30)),
             color: isMe ? kSecondaryColor : kPrimaryColor,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
