@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
@@ -138,14 +139,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Column(
-                          children: [
-                            Text("User Rating"),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(currentUser["rating"]),
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AllReviewScreen.routeName,
+                                arguments: {'userid': loggedInUser.uid});
+                          },
+                          child: Column(
+                            children: [
+                              Text("User Rating"),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(currentUser["rating"]),
+                            ],
+                          ),
                         ),
                         if (currentUser["role"] == "Babysitter")
                           Column(
@@ -233,16 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           leading: Icon(Icons.phone),
                         ),
                       ),
-                      if (currentUser["role"] == "Babysitter")
-                        GestureDetector(
-                          child: ListTile(
-                            title: Text(
-                              "Availability",
-                              style: TextStyle(color: kSecondaryColor),
-                            ),
-                            leading: Icon(Icons.settings),
-                          ),
-                        ), // phone
+                      // phone
                       GestureDetector(
                         onTap: () {
                           _auth.signOut();

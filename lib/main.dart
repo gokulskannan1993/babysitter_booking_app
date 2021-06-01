@@ -12,6 +12,7 @@ import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
+import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -41,6 +42,7 @@ class BabysitterBookingApp extends StatelessWidget {
         JobDetailScreen.routeName: (context) => JobDetailScreen(),
         ChatScreen.routeName: (context) => ChatScreen(),
         ReviewScreen.routeName: (context) => ReviewScreen(),
+        AllReviewScreen.routeName: (context) => AllReviewScreen(),
       },
     );
   }

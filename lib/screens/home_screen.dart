@@ -1224,6 +1224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             arguments: {'userid': user.id});
                                       },
                                       child: Card(
+                                        elevation: 10,
                                         child: FutureBuilder(
                                           future: _firestore
                                               .collection('users')
@@ -1311,6 +1312,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         snapshot
                                                                             .data
                                                                             .data();
+                                                                    _firestore
+                                                                        .collection(
+                                                                            'users')
+                                                                        .doc(user
+                                                                            .id)
+                                                                        .collection(
+                                                                            'chats')
+                                                                        .doc(loggedInUser
+                                                                            .uid)
+                                                                        .collection(
+                                                                            'data')
+                                                                        .get()
+                                                                        .then((QuerySnapshot
+                                                                                snapshot) =>
+                                                                            {
+                                                                              for (var message in snapshot.docs)
+                                                                                {
+                                                                                  if (message.data()["status"] == "send")
+                                                                                    {
+                                                                                      _firestore.collection('users').doc(user.id).collection('chats').doc(loggedInUser.uid).collection('data').doc(message.id).update({
+                                                                                        'status': "delivered"
+                                                                                      })
+                                                                                    }
+                                                                                }
+                                                                            });
+
                                                                     return Stack(
                                                                         children: [
                                                                           CircleAvatar(
@@ -1378,8 +1405,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   style: TextStyle(
                                                                       fontSize:
                                                                           16,
-                                                                      color:
-                                                                          kSecondaryColor),
+                                                                      color: Colors
+                                                                          .black54),
                                                                 ),
                                                                 Text(
                                                                   date,
@@ -1387,7 +1414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       fontSize:
                                                                           10,
                                                                       color: Colors
-                                                                          .black54),
+                                                                          .black26),
                                                                 ),
                                                               ],
                                                             ),
@@ -1448,12 +1475,70 @@ class CardForJobsParent extends StatelessWidget {
             final jobs = snapshot.data.docs;
             for (var job in jobs) {
               final jobCard = Card(
+                elevation: 10,
                 child: Container(
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: kSecondaryColor)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Column(
                     children: [
+                      if (job["assignedTo"] != "")
+                        FutureBuilder(
+                          future: _firestore
+                              .collection("users")
+                              .doc(job["assignedTo"])
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // if the snapshot is loading
+                              return Text("Loading...");
+                            } else {
+                              Map<String, dynamic> userData =
+                                  snapshot.data.data();
+                              return Container(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, UserScreen.routeName,
+                                        arguments: {
+                                          "userid": snapshot.data.id,
+                                        });
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            "${userData["name"]}",
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                          Text(
+                                            "Assigned to",
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage:
+                                            NetworkImage(userData["imageUrl"]),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ListTile(
                         title: Text(
                           job.data()["date"],

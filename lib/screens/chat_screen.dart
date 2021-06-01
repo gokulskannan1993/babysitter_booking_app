@@ -89,6 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           .format((message.data()["time"].toDate()));
                       final time = DateFormat('hh:mm a')
                           .format((message.data()["time"].toDate()));
+                      final status = message.data()["status"];
 
                       //Marks the message to read by the current user.
                       _firestore
@@ -98,9 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           .doc(loggedInUser.uid)
                           .collection('data')
                           .doc(message.id)
-                          .update({
-                        'hasRead': true,
-                      });
+                          .update({'status': "read"});
                       _firestore
                           .collection('users')
                           .doc(loggedInUser.uid)
@@ -115,10 +114,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       final messageBubble = MessageBubble(
                         sender: sender,
                         text: messageText,
-                        hasRead: message.data()["hasRead"],
                         isMe: isMe,
                         date: date,
                         time: time,
+                        status: status,
                       );
                       messageBubbles.add(messageBubble);
                     }
@@ -170,7 +169,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               'text': messageText,
                               'sender': loggedInUser.uid,
                               'time': DateTime.now(),
-                              'hasRead': false
+                              'status': "send"
                             }).then((value) => {
                                       // creates message on the target user
                                       _firestore
@@ -196,7 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         'text': messageText,
                                         'sender': loggedInUser.uid,
                                         'time': DateTime.now(),
-                                        'hasRead': false
+                                        'status': "send"
                                       })
                                     });
                             setState(() {
@@ -222,10 +221,20 @@ class _ChatScreenState extends State<ChatScreen> {
 // this styles the message bubble in the screen
 class MessageBubble extends StatelessWidget {
   MessageBubble(
-      {this.sender, this.text, this.isMe, this.hasRead, this.date, this.time});
+      {this.sender, this.text, this.isMe, this.date, this.time, this.status});
 
-  final String sender, text, time, date;
-  final bool isMe, hasRead;
+  final String sender, text, time, date, status;
+  final bool isMe;
+
+  Widget statusIcon() {
+    if (this.status == "send") {
+      return Icon(Icons.done, size: 15, color: kPrimaryColor);
+    } else if (this.status == "delivered") {
+      return Icon(Icons.done_all, size: 15, color: kPrimaryColor);
+    } else {
+      return Icon(Icons.done_all, size: 15, color: Colors.blue);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,12 +273,7 @@ class MessageBubble extends StatelessWidget {
                         fontSize: 15.0,
                         color: isMe ? kPrimaryColor : kSecondaryColor),
                   ),
-                  if (isMe)
-                    Icon(
-                      Icons.done_all,
-                      size: 15,
-                      color: hasRead ? Colors.blue : kPrimaryColor,
-                    )
+                  if (isMe) statusIcon()
                 ],
               ),
             ),

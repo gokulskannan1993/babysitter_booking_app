@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
+import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
@@ -112,15 +113,23 @@ class _UserScreenState extends State<UserScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Column(
-                                children: [
-                                  Text("User Rating"),
-                                  SizedBox(
-                                    height: 5,
+                              if (profileUser["role"] == "Babysitter")
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, AllReviewScreen.routeName,
+                                        arguments: {'userid': data["userid"]});
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text("User Rating"),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(profileUser["rating"]),
+                                    ],
                                   ),
-                                  Text(profileUser["rating"]),
-                                ],
-                              ),
+                                ),
                               Column(
                                 children: [
                                   Text("Contacts"),

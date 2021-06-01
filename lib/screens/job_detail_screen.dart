@@ -1,13 +1,16 @@
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/home_screen.dart';
+import 'package:babysitter_booking_app/screens/review_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
+import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class JobDetailScreen extends StatefulWidget {
   static String routeName = "job_detail_screen";
@@ -70,8 +73,18 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             return Text("Loading...");
           } else {
             Map<String, dynamic> job = snapshot.data.data();
+
+            String dateandTime = "${job["date"]}, ${job["to"]}";
+            DateTime jobEnd =
+                DateFormat("d MMMM, yyyy, hh:mm a").parse(dateandTime);
+
+            DateTime currentTime = DateTime.now();
+
+            print(jobEnd.isAfter(currentTime));
+
             return Card(
               child: Container(
+                padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
                     if (job["assignedTo"] != "")
@@ -100,6 +113,23 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
+                                    // if (currentTime.isAfter(jobEnd))
+                                    CustomLargeButton(
+                                      textColor: kSecondaryColor,
+                                      backgroundColor: kPrimaryColor,
+                                      btnText: "Give Feedback",
+                                      minWidth: 100,
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, ReviewScreen.routeName,
+                                            arguments: {
+                                              'userid': job["assignedTo"]
+                                            });
+                                      },
+                                    ),
+                                    SizedBox(
+                                      width: 70,
+                                    ),
                                     Column(
                                       children: [
                                         Text(
