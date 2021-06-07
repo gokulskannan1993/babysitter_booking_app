@@ -2,6 +2,7 @@ import 'package:babysitter_booking_app/screens/profile_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
+import 'package:babysitter_booking_app/services/location_reroute.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -174,6 +175,15 @@ class _ProfileEditScreen extends State<ProfileEditScreen> {
                             ),
                             SizedBox(
                               height: 20,
+                            ),
+                            CustomLargeButton(
+                              textColor: kPrimaryColor,
+                              backgroundColor: kSecondaryColor,
+                              btnText: "Show on Map",
+                              onPressed: () {
+                                launchLocation(
+                                    "${currentUser['street']},  ${currentUser['county']}");
+                              },
                             ),
                             ListTile(
                               title: Text(

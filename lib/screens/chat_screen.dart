@@ -177,7 +177,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           .doc(loggedInUser.uid)
                                           .collection('chats')
                                           .doc(data["userid"].toString())
-                                          .set({'unread': true}),
+                                          .set({'unread': false}),
                                       _firestore
                                           .collection('users')
                                           .doc(data["userid"])

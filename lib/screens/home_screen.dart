@@ -7,6 +7,7 @@ import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
+import 'package:babysitter_booking_app/services/location_reroute.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -92,20 +93,20 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  //Show location on google map
-  Future<void> launchLocation(String address) async {
-    if (await canLaunch("https://www.google.com/maps/search")) {
-      final bool nativeApp = await launch(
-          "https://www.google.com/maps/search/$address",
-          forceWebView: false,
-          universalLinksOnly: true,
-          forceSafariVC: false);
-      if (!nativeApp) {
-        await launch("https://www.google.com/maps/search/$address",
-            forceWebView: true, forceSafariVC: true);
-      }
-    }
-  }
+  // //Show location on google map
+  // Future<void> launchLocation(String address) async {
+  //   if (await canLaunch("https://www.google.com/maps/search")) {
+  //     final bool nativeApp = await launch(
+  //         "https://www.google.com/maps/search/$address",
+  //         forceWebView: false,
+  //         universalLinksOnly: true,
+  //         forceSafariVC: false);
+  //     if (!nativeApp) {
+  //       await launch("https://www.google.com/maps/search/$address",
+  //           forceWebView: true, forceSafariVC: true);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -186,21 +187,54 @@ class _HomeScreenState extends State<HomeScreen> {
                                       });
                                     },
                                   ),
-                                CustomIconButton(
-                                  icon: Icon(
-                                    Icons.message,
-                                    color: state == "message"
-                                        ? kPrimaryColor
-                                        : kSecondaryColor,
-                                  ),
-                                  minWidth: 50,
-                                  backgroundColor: state == "message"
-                                      ? kSecondaryColor
-                                      : kPrimaryColor,
-                                  onPressed: () {
-                                    setState(() {
-                                      state = 'message';
-                                    });
+                                StreamBuilder<QuerySnapshot>(
+                                  stream: _firestore
+                                      .collection('users')
+                                      .doc(loggedInUser.uid)
+                                      .collection('chats')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          backgroundColor: kSecondaryColor,
+                                        ),
+                                      );
+                                    } else {
+                                      final chats = snapshot.data.docs;
+                                      bool hasUnread = false;
+                                      for (var chat in chats) {
+                                        hasUnread = chat.data()['unread'];
+                                      }
+
+                                      return Stack(
+                                        children: [
+                                          CustomIconButton(
+                                            icon: Icon(
+                                              Icons.message,
+                                              color: state == "message"
+                                                  ? kPrimaryColor
+                                                  : kSecondaryColor,
+                                            ),
+                                            minWidth: 50,
+                                            backgroundColor: state == "message"
+                                                ? kSecondaryColor
+                                                : kPrimaryColor,
+                                            onPressed: () {
+                                              setState(() {
+                                                state = 'message';
+                                                hasUnread = false;
+                                              });
+                                            },
+                                          ),
+                                          if (hasUnread)
+                                            CircleAvatar(
+                                              radius: 9,
+                                              backgroundColor: Colors.red,
+                                            ),
+                                        ],
+                                      );
+                                    }
                                   },
                                 ),
                               ],
