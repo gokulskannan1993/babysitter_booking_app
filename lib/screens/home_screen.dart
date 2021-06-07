@@ -1273,6 +1273,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           .format(latestMessage[
                                                                   "time"]
                                                               .toDate());
+                                                      String messageText =
+                                                          latestMessage["text"];
+                                                      try {
+                                                        messageText =
+                                                            "${messageText.substring(0, 10)}...";
+                                                      } catch (e) {}
 
                                                       return Padding(
                                                         padding:
@@ -1312,6 +1318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         snapshot
                                                                             .data
                                                                             .data();
+
                                                                     _firestore
                                                                         .collection(
                                                                             'users')
@@ -1385,8 +1392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           kSecondaryColor),
                                                                 ),
                                                                 Text(
-                                                                  latestMessage[
-                                                                      "text"],
+                                                                  messageText,
                                                                   style: TextStyle(
                                                                       fontSize:
                                                                           16,
