@@ -139,22 +139,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, AllReviewScreen.routeName,
-                                arguments: {'userid': loggedInUser.uid});
-                          },
-                          child: Column(
-                            children: [
-                              Text("User Rating"),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(currentUser["rating"]),
-                            ],
+                        if (currentUser["role"] == "Babysitter")
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AllReviewScreen.routeName,
+                                  arguments: {'userid': loggedInUser.uid});
+                            },
+                            child: Column(
+                              children: [
+                                Text("User Rating"),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(currentUser["rating"]),
+                              ],
+                            ),
                           ),
-                        ),
                         if (currentUser["role"] == "Babysitter")
                           Column(
                             children: [
@@ -167,17 +168,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   .toString()),
                             ],
                           ),
-                        Column(
-                          children: [
-                            Text("Contacts"),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(List.from(currentUser["contacts"])
-                                .length
-                                .toString()),
-                          ],
-                        ),
+                        if (currentUser["role"] == "Parent")
+                          Column(
+                            children: [
+                              Text("Contacts"),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(List.from(currentUser["contacts"])
+                                  .length
+                                  .toString()),
+                            ],
+                          ),
                       ],
                     ),
                   ),

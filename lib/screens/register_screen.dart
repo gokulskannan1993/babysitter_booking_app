@@ -581,10 +581,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'county': user.county,
                                     'phone': user.phone,
                                     'imageUrl': user.profileImage,
-                                    'contacts': user.contacts,
-                                    'followers': "0",
-                                    "recommends": "0",
-                                    "rating": "0",
+                                    'contacts': [],
                                     "children": children,
                                   });
                                 } else {
@@ -606,12 +603,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'appliedJobs': bs.appliedJobs,
                                     'assignedJobs': bs.assignedJobs,
                                     'offeredJobs': bs.offeredJobs,
-                                    "contacts": bs.contacts,
                                     'maxAgeofChild': maxChildAge,
                                     'minAgeofChild': minChildAge,
                                     'maxNoofChildren': maxNoOfChildren,
-                                    'followers': bs.followers,
-                                    "recommends": bs.recommends,
+                                    'followers': [],
                                     "rating": "0",
                                   });
                                 }

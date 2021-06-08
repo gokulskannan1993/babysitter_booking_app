@@ -14,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "home_screen";
@@ -519,6 +518,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                               });
                                                                         }
                                                                       }
+                                                                    }),
+                                                                IconButton(
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .location_on,
+                                                                      color:
+                                                                          kSecondaryColor,
+                                                                      size: 30,
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      launchLocation(
+                                                                          "${creator['street']},  ${creator['county']}");
                                                                     })
                                                               ],
                                                             ),
@@ -530,29 +542,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   "From ${job['from']} to ${job['to']}"),
                                                               subtitle: Text(
                                                                   "${creator['street']},  ${creator['county']}"),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 5,
-                                                            ),
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceAround,
-                                                              children: [
-                                                                CustomLargeButton(
-                                                                  textColor:
-                                                                      kPrimaryColor,
-                                                                  backgroundColor:
-                                                                      kSecondaryColor,
-                                                                  btnText:
-                                                                      "Show on Map",
-                                                                  onPressed:
-                                                                      () {
-                                                                    launchLocation(
-                                                                        "${creator['street']},  ${creator['county']}");
-                                                                  },
-                                                                )
-                                                              ],
                                                             ),
                                                           ],
                                                         ));
@@ -1468,7 +1457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     );
-                                    ;
+
                                     messageCards.add(messageCard);
                                   }
                                   return Container(
@@ -1625,36 +1614,6 @@ class CardForJobsParent extends StatelessWidget {
             );
           }
         },
-      ),
-    );
-  }
-}
-
-// Calender view for Babysitter
-class CalenderForBabySitter extends StatelessWidget {
-  const CalenderForBabySitter({
-    Key key,
-    @required CalendarController controller,
-  })  : _controller = controller,
-        super(key: key);
-
-  final CalendarController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: TableCalendar(
-        onDaySelected: (day, events, holidays) {},
-        initialCalendarFormat: CalendarFormat.week,
-        calendarController: _controller,
-        calendarStyle: CalendarStyle(
-            todayColor: kMediumDarkText, selectedColor: kSecondaryColor),
-        headerStyle: HeaderStyle(
-            centerHeaderTitle: true,
-            formatButtonTextStyle: TextStyle(color: Colors.transparent),
-            formatButtonDecoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(20))),
       ),
     );
   }

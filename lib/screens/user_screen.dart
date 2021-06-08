@@ -130,17 +130,18 @@ class _UserScreenState extends State<UserScreen> {
                                     ],
                                   ),
                                 ),
-                              Column(
-                                children: [
-                                  Text("Contacts"),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(List.from(profileUser["contacts"])
-                                      .length
-                                      .toString()),
-                                ],
-                              ),
+                              if (profileUser["role"] == "Parent")
+                                Column(
+                                  children: [
+                                    Text("Contacts"),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(List.from(profileUser["contacts"])
+                                        .length
+                                        .toString()),
+                                  ],
+                                ),
                               if (profileUser["role"] == "Babysitter")
                                 Column(
                                   children: [

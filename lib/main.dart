@@ -14,10 +14,25 @@ import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var initializationSettingsAndroid =
+      AndroidInitializationSettings('codex_logo');
+  var initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String payload) async {
+    if (payload != null) {
+      debugPrint("Payload: $payload");
+    }
+  });
+
   await Firebase.initializeApp();
   runApp(BabysitterBookingApp());
 }
