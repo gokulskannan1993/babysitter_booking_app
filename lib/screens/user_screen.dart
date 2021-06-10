@@ -306,7 +306,7 @@ class _UserScreenState extends State<UserScreen> {
                                       height: 5,
                                     ),
                                     Text(
-                                      "Maximum Age:    ${profileUser["minAgeofChild"]}",
+                                      "Minimum Age:    ${profileUser["minAgeofChild"]}",
                                       style: TextStyle(
                                           fontSize: 15, color: kSecondaryColor),
                                     ),

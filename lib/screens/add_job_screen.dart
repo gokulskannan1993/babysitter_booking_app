@@ -138,7 +138,7 @@ class _AddJobState extends State<AddJobScreen> {
                         }),
                     ListTile(
                       title: Text(
-                        "Select Maximum wage per hour (£)",
+                        "Select Maximum wage per hour (€)",
                         style: TextStyle(color: kSecondaryColor, fontSize: 20),
                       ),
                     ),

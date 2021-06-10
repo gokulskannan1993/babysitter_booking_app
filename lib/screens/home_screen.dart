@@ -267,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       backgroundColor: homestate == "default"
                                           ? kSecondaryColor
                                           : kPrimaryColor,
-                                      btnText: "Calender",
+                                      btnText: "Calendar",
                                       minWidth: 100,
                                       onPressed: () {
                                         setState(() {
@@ -352,6 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               calendarController: _controller,
                                               calendarStyle: CalendarStyle(
                                                   todayColor: kMediumDarkText,
+                                                  markersColor: Colors.red,
                                                   selectedColor:
                                                       kSecondaryColor),
                                               headerStyle: HeaderStyle(
@@ -490,8 +491,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 dynamic>
                                                                             chatData =
                                                                             snapshot.data.data();
-                                                                        if (chatData[
-                                                                            "unread"]) {
+                                                                        if (chatData !=
+                                                                            null) {
                                                                           return Stack(
                                                                             children: [
                                                                               IconButton(
@@ -505,10 +506,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                       'userid': job["creator"]
                                                                                     });
                                                                                   }),
-                                                                              CircleAvatar(
-                                                                                radius: 8,
-                                                                                backgroundColor: Colors.red,
-                                                                              ),
+                                                                              if (chatData["unread"])
+                                                                                CircleAvatar(
+                                                                                  radius: 8,
+                                                                                  backgroundColor: Colors.red,
+                                                                                ),
                                                                             ],
                                                                           );
                                                                         } else {
@@ -1065,7 +1067,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           currentUser["maxNoofChildren"] >=
                                               List.from(job["children"])
                                                   .length &&
-                                          isAlright) {
+                                          isAlright &&
+                                          currentUser["wage"] <=
+                                              job["maxWage"]) {
                                         final jobCard = Card(
                                             child: Container(
                                                 decoration: BoxDecoration(
@@ -1181,6 +1185,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 ListTile(
                                                                   title: Text(
                                                                     "Number of Children: ${List.from(userData["children"]).length.toString()}",
+                                                                    style: TextStyle(
+                                                                        color:
+                                                                            kSecondaryColor),
+                                                                  ),
+                                                                ),
+                                                                ListTile(
+                                                                  title: Text(
+                                                                    "Maximum Wage: ${job.data()["maxWage"]}",
                                                                     style: TextStyle(
                                                                         color:
                                                                             kSecondaryColor),

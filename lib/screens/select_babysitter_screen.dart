@@ -48,6 +48,7 @@ class _SelectBabysitter extends State<SelectBabysitter> {
   Widget build(BuildContext context) {
     data = ModalRoute.of(context).settings.arguments;
     List askedUsers = data["askedUsers"];
+    List askedBy = data["askedBy"];
 
     return Scaffold(
       body: Container(
@@ -62,7 +63,8 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                 final sitters = snapshot.data.docs;
                 for (var sitter in sitters) {
                   if (sitter.data()["wage"] <= data["maxWage"] &&
-                      !askedUsers.contains(sitter.id)) {
+                      !askedUsers.contains(sitter.id) &&
+                      !askedBy.contains(sitter.id)) {
                     final sitterCard = Card(
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -106,7 +108,7 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                                   height: 8,
                                 ),
                                 Text(
-                                  "Cost: £${sitter.data()["wage"]} per hour",
+                                  "Cost: €${sitter.data()["wage"]} per hour",
                                   style: TextStyle(fontSize: 10),
                                 ),
                               ],

@@ -466,7 +466,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     textColor: childGender == "male"
                                         ? kPrimaryColor
                                         : kSecondaryColor,
-                                    minWidth: 150,
+                                    minWidth: 120,
                                     btnText: "Male",
                                     onPressed: () {
                                       setState(() {
@@ -481,7 +481,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     textColor: childGender == "female"
                                         ? kPrimaryColor
                                         : kSecondaryColor,
-                                    minWidth: 150,
+                                    minWidth: 120,
                                     btnText: "Female",
                                     onPressed: () {
                                       setState(() {

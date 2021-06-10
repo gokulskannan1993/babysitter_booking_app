@@ -209,7 +209,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         });
                                   },
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
                                     children: [
                                       IconButton(
                                           icon: Icon(
@@ -248,15 +249,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         ],
                                       ),
                                       SizedBox(
-                                        width: 20,
+                                        width: 10,
                                       ),
                                       CircleAvatar(
                                         radius: 30,
                                         backgroundImage:
                                             NetworkImage(userData["imageUrl"]),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
                                       ),
                                     ],
                                   ),
@@ -317,7 +315,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       SizedBox(
-                                        width: 20,
+                                        width: 10,
                                       ),
                                       Column(
                                         mainAxisAlignment:
@@ -340,7 +338,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         ],
                                       ),
                                       SizedBox(
-                                        width: 20,
+                                        width: 10,
                                       ),
                                       Text(
                                         "$askedByText...",
@@ -430,6 +428,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         ),
                     ListTile(
                       title: Text(
+                        "Maximum Wage Possible: ${job["maxWage"]}",
+                        style: TextStyle(color: kSecondaryColor),
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
                         job["date"],
                         style: TextStyle(color: kSecondaryColor),
                       ),
@@ -453,7 +457,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                   arguments: {
                                     "jobID": data["job"],
                                     "maxWage": job["maxWage"],
-                                    "askedUsers": job["askedTo"]
+                                    "askedUsers": job["askedTo"],
+                                    "askedBy": job["askedBy"]
                                   });
                             },
                           ),
