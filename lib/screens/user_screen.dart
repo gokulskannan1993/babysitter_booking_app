@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/review_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +23,8 @@ class _UserScreenState extends State<UserScreen> {
   final _firestore = FirebaseFirestore.instance;
   //fire auth instance
   final _auth = FirebaseAuth.instance;
+
+  bool hasJob = false;
 
   User loggedInUser;
 
@@ -44,10 +47,23 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
+  checkUserJobs(String userid) {
+    _firestore
+        .collection('jobs')
+        .where('creator', isEqualTo: loggedInUser.uid)
+        .get()
+        .then((QuerySnapshot snapshot) => {
+              for (var job in snapshot.docs)
+                {
+                  if (job["assignedTo"] == userid) {hasJob = true}
+                }
+            });
+  }
+
   @override
   Widget build(BuildContext context) {
     data = ModalRoute.of(context).settings.arguments;
-
+    checkUserJobs(data["userid"]);
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -103,6 +119,33 @@ class _UserScreenState extends State<UserScreen> {
                                   ),
                                 ],
                               ),
+                              if (profileUser["role"] == "Babysitter" &&
+                                  loggedInUser.uid != data['userid'])
+                                CustomLargeButton(
+                                  textColor: kSecondaryColor,
+                                  backgroundColor: kPrimaryColor,
+                                  btnText: "Give Feedback",
+                                  minWidth: 100,
+                                  onPressed: () {
+                                    if (hasJob) {
+                                      Navigator.pushNamed(
+                                          context, ReviewScreen.routeName,
+                                          arguments: {
+                                            'userid': data["userid"]
+                                          });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                          "You don't have any jobs with this babysitter",
+                                          style:
+                                              TextStyle(color: kPrimaryColor),
+                                        ),
+                                      ));
+                                    }
+                                  },
+                                ),
                             ],
                           ),
                         ),
@@ -295,7 +338,7 @@ class _UserScreenState extends State<UserScreen> {
                             ],
                           ),
                         ),
-                      )
+                      ),
                     ],
                   );
                 }

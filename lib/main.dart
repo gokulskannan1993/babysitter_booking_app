@@ -21,17 +21,17 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('codex_logo');
-  var initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-    if (payload != null) {
-      debugPrint("Payload: $payload");
-    }
-  });
+  // var initializationSettingsAndroid =
+  //     AndroidInitializationSettings("codex_logo");
+  // var initializationSettings =
+  //     InitializationSettings(android: initializationSettingsAndroid);
+  //
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+  //     onSelectNotification: (String payload) async {
+  //   if (payload != null) {
+  //     debugPrint("Payload: $payload");
+  //   }
+  // });
 
   await Firebase.initializeApp();
   runApp(BabysitterBookingApp());

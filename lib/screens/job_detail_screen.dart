@@ -113,20 +113,20 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    // if (currentTime.isAfter(jobEnd))
-                                    CustomLargeButton(
-                                      textColor: kSecondaryColor,
-                                      backgroundColor: kPrimaryColor,
-                                      btnText: "Give Feedback",
-                                      minWidth: 100,
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, ReviewScreen.routeName,
-                                            arguments: {
-                                              'userid': job["assignedTo"]
-                                            });
-                                      },
-                                    ),
+                                    if (currentTime.isAfter(jobEnd))
+                                      CustomLargeButton(
+                                        textColor: kSecondaryColor,
+                                        backgroundColor: kPrimaryColor,
+                                        btnText: "Give Feedback",
+                                        minWidth: 100,
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, ReviewScreen.routeName,
+                                              arguments: {
+                                                'userid': job["assignedTo"]
+                                              });
+                                        },
+                                      ),
                                     SizedBox(
                                       width: 70,
                                     ),
@@ -191,6 +191,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                               Map<String, dynamic> userData =
                                   snapshot.data.data();
                               return Container(
+                                padding: EdgeInsets.all(20),
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
@@ -294,6 +295,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             } else {
                               Map<String, dynamic> userData =
                                   snapshot.data.data();
+                              String askedByText =
+                                  List.from(job["askedBy"])[i]["message"];
+                              try {
+                                askedByText = askedByText.substring(0, 10);
+                              } catch (e) {}
                               return Container(
                                 padding: EdgeInsets.all(20),
                                 child: GestureDetector(
@@ -337,7 +343,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         width: 20,
                                       ),
                                       Text(
-                                        List.from(job["askedBy"])[i]["message"],
+                                        "$askedByText...",
                                         style: TextStyle(fontSize: 10),
                                       ),
                                       IconButton(
@@ -451,51 +457,52 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                   });
                             },
                           ),
-                        CustomLargeButton(
-                          textColor: kPrimaryColor,
-                          backgroundColor: kSecondaryColor,
-                          btnText: "Delete",
-                          minWidth: 150,
-                          onPressed: () {
-                            if (job["assignedTo"] != "") {
+                        if (job["assignedTo"] == "")
+                          CustomLargeButton(
+                            textColor: kPrimaryColor,
+                            backgroundColor: kSecondaryColor,
+                            btnText: "Delete",
+                            minWidth: 150,
+                            onPressed: () {
+                              if (job["assignedTo"] != "") {
+                                _firestore
+                                    .collection("users")
+                                    .doc(job["assignedTo"])
+                                    .update({
+                                  "assignedJobs":
+                                      FieldValue.arrayRemove([data["job"]])
+                                });
+                              }
+                              if (List.from(job["askedTo"]).isNotEmpty) {
+                                for (var user in List.from(job["askedTo"])) {
+                                  _firestore
+                                      .collection("users")
+                                      .doc(user)
+                                      .update({
+                                    "offeredJobs":
+                                        FieldValue.arrayRemove([data["job"]])
+                                  });
+                                }
+                              }
+                              if (List.from(job["askedBy"]).isNotEmpty) {
+                                for (var req in List.from(job["askedBy"])) {
+                                  _firestore
+                                      .collection("users")
+                                      .doc(req["user"])
+                                      .update({
+                                    "appliedJobs":
+                                        FieldValue.arrayRemove([data["job"]])
+                                  });
+                                }
+                              }
                               _firestore
-                                  .collection("users")
-                                  .doc(job["assignedTo"])
-                                  .update({
-                                "assignedJobs":
-                                    FieldValue.arrayRemove([data["job"]])
-                              });
-                            }
-                            if (List.from(job["askedTo"]).isNotEmpty) {
-                              for (var user in List.from(job["askedTo"])) {
-                                _firestore
-                                    .collection("users")
-                                    .doc(user)
-                                    .update({
-                                  "offeredJobs":
-                                      FieldValue.arrayRemove([data["job"]])
-                                });
-                              }
-                            }
-                            if (List.from(job["askedBy"]).isNotEmpty) {
-                              for (var req in List.from(job["askedBy"])) {
-                                _firestore
-                                    .collection("users")
-                                    .doc(req["user"])
-                                    .update({
-                                  "appliedJobs":
-                                      FieldValue.arrayRemove([data["job"]])
-                                });
-                              }
-                            }
-                            _firestore
-                                .collection("jobs")
-                                .doc(data["job"])
-                                .delete();
-                            Navigator.pushReplacementNamed(
-                                context, HomeScreen.routeName);
-                          },
-                        )
+                                  .collection("jobs")
+                                  .doc(data["job"])
+                                  .delete();
+                              Navigator.pushReplacementNamed(
+                                  context, HomeScreen.routeName);
+                            },
+                          )
                       ],
                     ),
                   ],

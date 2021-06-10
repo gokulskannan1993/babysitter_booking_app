@@ -1,3 +1,4 @@
+import 'package:babysitter_booking_app/main.dart';
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
@@ -8,10 +9,12 @@ import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/services/location_reroute.dart';
+import 'package:babysitter_booking_app/services/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -32,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // to customize the calender with dates have events must be highlighted
   Map<DateTime, List<String>> currentEvents;
   Map unread = {};
+  bool newMessage = false;
 
   DateTime selectedDate = DateTime.now();
 
@@ -41,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
+    // showMessageNotification();
   }
 
   //checks for logged in user
@@ -92,19 +97,21 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  // //Show location on google map
-  // Future<void> launchLocation(String address) async {
-  //   if (await canLaunch("https://www.google.com/maps/search")) {
-  //     final bool nativeApp = await launch(
-  //         "https://www.google.com/maps/search/$address",
-  //         forceWebView: false,
-  //         universalLinksOnly: true,
-  //         forceSafariVC: false);
-  //     if (!nativeApp) {
-  //       await launch("https://www.google.com/maps/search/$address",
-  //           forceWebView: true, forceSafariVC: true);
-  //     }
-  //   }
+  // // show notification
+  // void showMessageNotification() {
+  //   _firestore
+  //       .collection('users')
+  //       .doc(loggedInUser.uid)
+  //       .collection('chats')
+  //       .get()
+  //       .then((QuerySnapshot snapshot) => {
+  //             for (var doc in snapshot.docs)
+  //               {
+  //                 if (doc['unread']) {newMessage = true}
+  //               },
+  //             if (newMessage)
+  //               {showNotification("New Message", "You have a new Message")}
+  //           });
   // }
 
   @override

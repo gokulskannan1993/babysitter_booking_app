@@ -98,6 +98,20 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         child: Column(
                           children: [
                             SizedBox(height: 50),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Rating: ",
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                      5, (index) => _buildRatingStar(index)),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30),
                             Card(
                               elevation: 10,
                               child: Padding(
@@ -112,20 +126,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                   },
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Rating: ",
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                Row(
-                                  children: List.generate(
-                                      5, (index) => _buildRatingStar(index)),
-                                ),
-                              ],
                             ),
                             SizedBox(height: 30),
                             Row(
@@ -208,6 +208,20 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         child: Column(
                           children: [
                             SizedBox(height: 50),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Rating: ",
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                      5, (index) => _buildRatingStar(index)),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30),
                             Card(
                               elevation: 10,
                               child: Padding(
@@ -222,20 +236,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                   },
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Rating: ",
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                Row(
-                                  children: List.generate(
-                                      5, (index) => _buildRatingStar(index)),
-                                ),
-                              ],
                             ),
                             SizedBox(height: 30),
                             Row(
