@@ -152,6 +152,14 @@ class _RegisterScreen extends State<RegisterScreen> {
                         setState(() {
                           state = "details";
                         });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text(
+                            "Passwords don't match",
+                            style: TextStyle(color: kPrimaryColor),
+                          ),
+                        ));
                       }
                     },
                   ),
