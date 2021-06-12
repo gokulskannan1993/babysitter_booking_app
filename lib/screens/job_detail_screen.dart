@@ -80,8 +80,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
             DateTime currentTime = DateTime.now();
 
-            print(jobEnd.isAfter(currentTime));
-
             return Card(
               child: Container(
                 padding: EdgeInsets.all(20),
@@ -111,14 +109,15 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                       });
                                 },
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     if (currentTime.isAfter(jobEnd))
                                       CustomLargeButton(
                                         textColor: kSecondaryColor,
                                         backgroundColor: kPrimaryColor,
                                         btnText: "Give Feedback",
-                                        minWidth: 100,
+                                        minWidth: 80,
                                         onPressed: () {
                                           Navigator.pushNamed(
                                               context, ReviewScreen.routeName,
@@ -128,7 +127,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                         },
                                       ),
                                     SizedBox(
-                                      width: 70,
+                                      width: 50,
                                     ),
                                     Column(
                                       children: [
@@ -149,9 +148,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                       radius: 30,
                                       backgroundImage:
                                           NetworkImage(userData["imageUrl"]),
-                                    ),
-                                    SizedBox(
-                                      width: 20,
                                     ),
                                   ],
                                 ),

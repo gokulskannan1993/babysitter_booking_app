@@ -75,22 +75,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           email: email, password: password);
                       if (user != null) {
                         Navigator.pushNamed(context, HomeScreen.routeName);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text(
-                            "Invalid email or password",
-                            style: TextStyle(color: kPrimaryColor),
-                          ),
-                        ));
                       }
-                      //for the spinner
-                      setState(() {
-                        _saving = false;
-                      });
                     } catch (e) {
                       print(e);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text(
+                          "Invalid email or password",
+                          style: TextStyle(color: kPrimaryColor),
+                        ),
+                      ));
                     }
+                    //for the spinner
+                    setState(() {
+                      _saving = false;
+                    });
                   },
                 ),
               ),

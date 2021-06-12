@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<DateTime, List<String>> currentEvents;
   Map unread = {};
   bool newMessage = false;
+  final now = DateTime.now();
 
   DateTime selectedDate = DateTime.now();
 
@@ -378,6 +379,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           } else {
                                             Map<String, dynamic> job =
                                                 snapshot.data.data();
+                                            String dateandTime =
+                                                "${job["date"]}, ${job["to"]}";
+                                            DateTime jobEnd = DateFormat(
+                                                    "d MMMM, yyyy, hh:mm a")
+                                                .parse(dateandTime);
 
                                             if (job['date'] ==
                                                 selectedDateString) {
@@ -824,6 +830,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       snapshot.data.data();
 
                                                   return Card(
+                                                    elevation: 10,
                                                     child: Container(
                                                       decoration: BoxDecoration(
                                                           borderRadius:
@@ -831,7 +838,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .circular(10),
                                                           border: Border.all(
                                                               color:
-                                                                  kSecondaryColor)),
+                                                                  kPrimaryColor)),
                                                       child: Column(
                                                         children: [
                                                           FutureBuilder(
@@ -1049,6 +1056,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final jobs = snapshot.data.docs;
                                     for (var job in jobs) {
                                       bool isAlright = true;
+                                      String dateandTime =
+                                          "${job["date"]}, ${job["from"]}";
+                                      DateTime jobStart =
+                                          DateFormat("d MMMM, yyyy, hh:mm a")
+                                              .parse(dateandTime);
+                                      if (now.isAfter(jobStart)) {
+                                        isAlright = false;
+                                      }
+
                                       List jobsApplied =
                                           List.from(job.data()["askedBy"]);
                                       List userApplied =
@@ -1071,14 +1087,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           currentUser["wage"] <=
                                               job["maxWage"]) {
                                         final jobCard = Card(
+                                            elevation: 10,
                                             child: Container(
                                                 decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10),
                                                     border: Border.all(
-                                                        color:
-                                                            kSecondaryColor)),
+                                                        color: kPrimaryColor)),
                                                 child: Column(children: [
                                                   FutureBuilder(
                                                     future: _firestore
@@ -1522,13 +1538,18 @@ class CardForJobsParent extends StatelessWidget {
             List<Card> joblist = [];
             final jobs = snapshot.data.docs;
             for (var job in jobs) {
+              String dateandTime = "${job["date"]}, ${job["to"]}";
+              DateTime jobEnd =
+                  DateFormat("d MMMM, yyyy, hh:mm a").parse(dateandTime);
+              String status =
+                  DateTime.now().isAfter(jobEnd) ? "Completed" : "In Progress";
               final jobCard = Card(
                 elevation: 10,
                 child: Container(
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: kPrimaryColor)),
                   child: Column(
                     children: [
                       if (job["assignedTo"] != "")
@@ -1595,6 +1616,15 @@ class CardForJobsParent extends StatelessWidget {
                         subtitle: Text(
                           "From ${job.data()["from"]} to ${job.data()["to"]}",
                           style: TextStyle(color: kSecondaryColor),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(
+                          "Status: $status",
+                          style: TextStyle(
+                              color: status == "Completed"
+                                  ? Colors.red
+                                  : Colors.green),
                         ),
                       ),
                       Row(
