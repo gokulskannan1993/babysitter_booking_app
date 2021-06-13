@@ -51,6 +51,16 @@ class _SelectBabysitter extends State<SelectBabysitter> {
     List askedBy = data["askedBy"];
 
     return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: kSecondaryColor,
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: FutureBuilder(
           future: _firestore.collection("users").doc(loggedInUser.uid).get(),
@@ -69,10 +79,6 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                       SizedBox(
                         height: 50,
                       ),
-                      if (contacts.isNotEmpty)
-                        ListTile(
-                          title: Text("Your Following"),
-                        ),
                       if (contacts.isNotEmpty)
                         StreamBuilder(
                             stream: _firestore
@@ -205,10 +211,6 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                             }),
                     ],
                   ),
-                  if (contacts.isNotEmpty)
-                    ListTile(
-                      title: Text("Others"),
-                    ),
                   StreamBuilder(
                       stream: _firestore
                           .collection("users")

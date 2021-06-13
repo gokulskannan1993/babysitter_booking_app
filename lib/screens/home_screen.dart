@@ -1,4 +1,3 @@
-import 'package:babysitter_booking_app/main.dart';
 import 'package:babysitter_booking_app/screens/chat_screen.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/job_detail_screen.dart';
@@ -58,41 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print(e);
     }
-  }
-
-  //create the message dialogue for applying for a job
-  Future<String> createMessageInput(BuildContext context) {
-    String message = "Hi I would like to apply for this job";
-    TextEditingController tController = TextEditingController();
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Your Message ?"),
-            content: TextField(
-              controller: tController,
-              maxLength: 20,
-            ),
-            actions: [
-              CustomLargeButton(
-                textColor: kPrimaryColor,
-                backgroundColor: kSecondaryColor,
-                btnText: "Apply",
-                minWidth: 100,
-                onPressed: () {
-                  setState(() {
-                    state = "browse";
-                  });
-                  Navigator.pop(
-                      context,
-                      tController.text.toString() == ""
-                          ? message
-                          : tController.text.toString());
-                },
-              ),
-            ],
-          );
-        });
   }
 
   @override
@@ -903,7 +867,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         ),
                                                                         SizedBox(
                                                                           width:
-                                                                              10,
+                                                                              30,
                                                                         ),
                                                                         Column(
                                                                           children: [
@@ -945,41 +909,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             children: [
                                                               CustomLargeButton(
                                                                 textColor:
-                                                                    kPrimaryColor,
-                                                                backgroundColor:
                                                                     kSecondaryColor,
+                                                                backgroundColor:
+                                                                    kPrimaryColor,
                                                                 btnText:
                                                                     "Delete",
                                                                 minWidth: 150,
                                                                 onPressed: () {
-                                                                  List
-                                                                      appliedJobs =
-                                                                      List.from(
-                                                                          currentUser[
-                                                                              "appliedJobs"]);
-                                                                  List askedBy =
-                                                                      List.from(
-                                                                          job["askedBy"]);
-
-                                                                  for (int i =
-                                                                          0;
-                                                                      i <
-                                                                          askedBy
-                                                                              .length;
-                                                                      i++) {
-                                                                    if (askedBy[i]
-                                                                            [
-                                                                            "user"] ==
-                                                                        loggedInUser
-                                                                            .uid) {
-                                                                      askedBy
-                                                                          .removeAt(
-                                                                              i);
-                                                                    }
-                                                                  }
-                                                                  appliedJobs
-                                                                      .remove(
-                                                                          jobId);
                                                                   _firestore
                                                                       .collection(
                                                                           "jobs")
@@ -987,7 +923,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           jobId)
                                                                       .update({
                                                                     "askedBy":
-                                                                        askedBy
+                                                                        FieldValue
+                                                                            .arrayRemove([
+                                                                      jobId
+                                                                    ])
                                                                   });
                                                                   _firestore
                                                                       .collection(
@@ -996,12 +935,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .uid)
                                                                       .update({
                                                                     "appliedJobs":
-                                                                        appliedJobs
+                                                                        FieldValue
+                                                                            .arrayRemove([
+                                                                      jobId
+                                                                    ])
                                                                   });
-                                                                  setState(() {
-                                                                    homestate =
-                                                                        "applied";
-                                                                  });
+                                                                  setState(
+                                                                      () {});
                                                                 },
                                                               )
                                                             ],
@@ -1181,31 +1121,44 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     ),
                                                                     CustomLargeButton(
                                                                       textColor:
-                                                                          kPrimaryColor,
-                                                                      backgroundColor:
                                                                           kSecondaryColor,
+                                                                      backgroundColor:
+                                                                          kPrimaryColor,
                                                                       btnText:
                                                                           "Apply",
                                                                       minWidth:
                                                                           100,
                                                                       onPressed:
                                                                           () {
-                                                                        createMessageInput(context).then((value) =>
-                                                                            {
-                                                                              jobsApplied.insert(0, {
-                                                                                "user": loggedInUser.uid,
-                                                                                "message": value
-                                                                              }),
-                                                                              userApplied.insert(0, job.id),
-                                                                              _firestore.collection("users").doc(loggedInUser.uid).update({
-                                                                                "appliedJobs": userApplied
-                                                                              }),
-                                                                              _firestore.collection("jobs").doc(job.id).update({
-                                                                                "askedBy": jobsApplied
-                                                                              }),
-                                                                            });
+                                                                        jobsApplied.insert(
+                                                                            0,
+                                                                            loggedInUser.uid);
+                                                                        userApplied.insert(
+                                                                            0,
+                                                                            job.id);
+                                                                        _firestore
+                                                                            .collection(
+                                                                                "users")
+                                                                            .doc(loggedInUser
+                                                                                .uid)
+                                                                            .update({
+                                                                          "appliedJobs":
+                                                                              userApplied
+                                                                        });
+                                                                        _firestore
+                                                                            .collection(
+                                                                                "jobs")
+                                                                            .doc(job
+                                                                                .id)
+                                                                            .update({
+                                                                          "askedBy":
+                                                                              jobsApplied
+                                                                        });
+
                                                                         joblist
                                                                             .removeAt(0);
+                                                                        setState(
+                                                                            () {});
                                                                       },
                                                                     ),
                                                                   ],
