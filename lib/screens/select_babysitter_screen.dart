@@ -144,8 +144,8 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                                               width: 10,
                                             ),
                                             CustomLargeButton(
-                                              textColor: kPrimaryColor,
-                                              backgroundColor: kSecondaryColor,
+                                              textColor: kSecondaryColor,
+                                              backgroundColor: kPrimaryColor,
                                               btnText: "Ask",
                                               minWidth: 100,
                                               onPressed: () {
@@ -276,8 +276,8 @@ class _SelectBabysitter extends State<SelectBabysitter> {
                                         width: 10,
                                       ),
                                       CustomLargeButton(
-                                        textColor: kPrimaryColor,
-                                        backgroundColor: kSecondaryColor,
+                                        textColor: kSecondaryColor,
+                                        backgroundColor: kPrimaryColor,
                                         btnText: "Ask",
                                         minWidth: 100,
                                         onPressed: () {

@@ -3,6 +3,7 @@ import 'package:babysitter_booking_app/screens/all_review_screen.dart';
 
 import 'package:babysitter_booking_app/models/user_model.dart';
 import 'package:babysitter_booking_app/screens/constants.dart';
+import 'package:babysitter_booking_app/screens/contact_card_screen.dart';
 import 'package:babysitter_booking_app/screens/home_screen.dart';
 import 'package:babysitter_booking_app/screens/profile_edit_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
@@ -157,28 +158,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         if (currentUser["role"] == "Babysitter")
-                          Column(
-                            children: [
-                              Text("Followers"),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(List.from(currentUser["followers"])
-                                  .length
-                                  .toString()),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, ContactCardScreen.routeName,
+                                  arguments: {
+                                    'users': currentUser['followers']
+                                  });
+                            },
+                            child: Column(
+                              children: [
+                                Text("Followers"),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(List.from(currentUser["followers"])
+                                    .length
+                                    .toString()),
+                              ],
+                            ),
                           ),
                         if (currentUser["role"] == "Parent")
-                          Column(
-                            children: [
-                              Text("Contacts"),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(List.from(currentUser["contacts"])
-                                  .length
-                                  .toString()),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, ContactCardScreen.routeName,
+                                  arguments: {
+                                    'users': currentUser['contacts']
+                                  }).then((value) => {
+                                    setState(() {
+                                      // refresh state of Page1
+                                    })
+                                  });
+                            },
+                            child: Column(
+                              children: [
+                                Text("Contacts"),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(List.from(currentUser["contacts"])
+                                    .length
+                                    .toString()),
+                              ],
+                            ),
                           ),
                       ],
                     ),

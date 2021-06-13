@@ -10,6 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'contact_card_screen.dart';
+
 class UserScreen extends StatefulWidget {
   static String routeName = "user_screen";
   @override
@@ -177,28 +179,54 @@ class _UserScreenState extends State<UserScreen> {
                                   ),
                                 ),
                               if (profileUser["role"] == "Parent")
-                                Column(
-                                  children: [
-                                    Text("Contacts"),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(List.from(profileUser["contacts"])
-                                        .length
-                                        .toString()),
-                                  ],
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, ContactCardScreen.routeName,
+                                        arguments: {
+                                          'users': profileUser['contacts']
+                                        }).then((value) => {
+                                          setState(() {
+                                            // refresh state of Page1
+                                          })
+                                        });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text("Contacts"),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(List.from(profileUser["contacts"])
+                                          .length
+                                          .toString()),
+                                    ],
+                                  ),
                                 ),
                               if (profileUser["role"] == "Babysitter")
-                                Column(
-                                  children: [
-                                    Text("Followers"),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(List.from(profileUser["followers"])
-                                        .length
-                                        .toString()),
-                                  ],
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, ContactCardScreen.routeName,
+                                        arguments: {
+                                          'users': profileUser['followers']
+                                        }).then((value) => {
+                                          setState(() {
+                                            // refresh state of Page1
+                                          })
+                                        });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text("Followers"),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(List.from(profileUser["followers"])
+                                          .length
+                                          .toString()),
+                                    ],
+                                  ),
                                 ),
                             ],
                           ),
