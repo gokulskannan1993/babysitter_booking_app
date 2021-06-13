@@ -616,6 +616,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     'maxNoofChildren': maxNoOfChildren,
                                     'followers': [],
                                     "rating": "0",
+                                    "hasNewOffer": false,
                                   });
                                 }
 

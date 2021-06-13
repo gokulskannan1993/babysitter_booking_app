@@ -68,6 +68,9 @@ class _UserScreenState extends State<UserScreen> {
       appBar: AppBar(
         leading: BackButton(
           color: kSecondaryColor,
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,

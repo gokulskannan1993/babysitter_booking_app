@@ -9,12 +9,10 @@ import 'package:babysitter_booking_app/screens/add_job_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/services/location_reroute.dart';
-import 'package:babysitter_booking_app/services/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -46,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
-    // showMessageNotification();
   }
 
   //checks for logged in user
@@ -97,23 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
   }
-
-  // // show notification
-  // void showMessageNotification() {
-  //   _firestore
-  //       .collection('users')
-  //       .doc(loggedInUser.uid)
-  //       .collection('chats')
-  //       .get()
-  //       .then((QuerySnapshot snapshot) => {
-  //             for (var doc in snapshot.docs)
-  //               {
-  //                 if (doc['unread']) {newMessage = true}
-  //               },
-  //             if (newMessage)
-  //               {showNotification("New Message", "You have a new Message")}
-  //           });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +215,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           ),
                                           if (hasUnread)
-                                            CircleAvatar(
-                                              radius: 9,
-                                              backgroundColor: Colors.red,
+                                            Positioned(
+                                              top: 10,
+                                              right: 10,
+                                              child: CircleAvatar(
+                                                radius: 6,
+                                                backgroundColor: Colors.red,
+                                              ),
                                             ),
                                         ],
                                       );
@@ -276,20 +260,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                         });
                                       },
                                     ),
-                                    CustomLargeButton(
-                                      textColor: homestate == "offered"
-                                          ? kPrimaryColor
-                                          : kSecondaryColor,
-                                      backgroundColor: homestate == "offered"
-                                          ? kSecondaryColor
-                                          : kPrimaryColor,
-                                      btnText: "Offered",
-                                      minWidth: 100,
-                                      onPressed: () {
-                                        setState(() {
-                                          homestate = "offered";
-                                        });
-                                      },
+                                    Stack(
+                                      children: [
+                                        CustomLargeButton(
+                                          textColor: homestate == "offered"
+                                              ? kPrimaryColor
+                                              : kSecondaryColor,
+                                          backgroundColor:
+                                              homestate == "offered"
+                                                  ? kSecondaryColor
+                                                  : kPrimaryColor,
+                                          btnText: "Offered",
+                                          minWidth: 100,
+                                          onPressed: () {
+                                            _firestore
+                                                .collection('users')
+                                                .doc(loggedInUser.uid)
+                                                .update({"hasNewOffer": false});
+                                            setState(() {
+                                              homestate = "offered";
+                                            });
+                                          },
+                                        ),
+                                        if (currentUser["hasNewOffer"])
+                                          Positioned(
+                                            top: 10,
+                                            right: 5,
+                                            child: CircleAvatar(
+                                              radius: 6,
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                     CustomLargeButton(
                                       textColor: homestate == "applied"
@@ -353,6 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               calendarController: _controller,
                                               calendarStyle: CalendarStyle(
                                                   todayColor: kMediumDarkText,
+                                                  markersPositionTop: 35,
                                                   markersColor: Colors.red,
                                                   selectedColor:
                                                       kSecondaryColor),
@@ -379,11 +382,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           } else {
                                             Map<String, dynamic> job =
                                                 snapshot.data.data();
-                                            String dateandTime =
-                                                "${job["date"]}, ${job["to"]}";
-                                            DateTime jobEnd = DateFormat(
-                                                    "d MMMM, yyyy, hh:mm a")
-                                                .parse(dateandTime);
 
                                             if (job['date'] ==
                                                 selectedDateString) {
@@ -513,9 +511,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                     });
                                                                                   }),
                                                                               if (chatData["unread"])
-                                                                                CircleAvatar(
-                                                                                  radius: 8,
-                                                                                  backgroundColor: Colors.red,
+                                                                                Positioned(
+                                                                                  top: 5,
+                                                                                  right: 5,
+                                                                                  child: CircleAvatar(
+                                                                                    radius: 6,
+                                                                                    backgroundColor: Colors.red,
+                                                                                  ),
                                                                                 ),
                                                                             ],
                                                                           );
@@ -610,7 +612,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .circular(10),
                                                           border: Border.all(
                                                               color:
-                                                                  kSecondaryColor)),
+                                                                  kPrimaryColor)),
                                                       child: Column(
                                                         children: [
                                                           FutureBuilder(
@@ -688,6 +690,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ),
                                                           ListTile(
                                                             title: Text(
+                                                              "Wage Per Hour: €${job["maxWage"]}",
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      kSecondaryColor),
+                                                            ),
+                                                          ),
+                                                          ListTile(
+                                                            title: Text(
                                                               job["date"],
                                                               style: TextStyle(
                                                                   color:
@@ -756,9 +766,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               ),
                                                               CustomLargeButton(
                                                                 textColor:
-                                                                    kPrimaryColor,
-                                                                backgroundColor:
                                                                     kSecondaryColor,
+                                                                backgroundColor:
+                                                                    kPrimaryColor,
                                                                 btnText:
                                                                     "Reject",
                                                                 minWidth: 150,
@@ -1056,6 +1066,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final jobs = snapshot.data.docs;
                                     for (var job in jobs) {
                                       bool isAlright = true;
+
+                                      // determines if the job is before now
                                       String dateandTime =
                                           "${job["date"]}, ${job["from"]}";
                                       DateTime jobStart =
@@ -1208,7 +1220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 ),
                                                                 ListTile(
                                                                   title: Text(
-                                                                    "Maximum Wage: ${job.data()["maxWage"]}",
+                                                                    "Wage Per Hour: €${job.data()["maxWage"]}",
                                                                     style: TextStyle(
                                                                         color:
                                                                             kSecondaryColor),
@@ -1278,8 +1290,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final messageCard = GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
-                                            context, ChatScreen.routeName,
-                                            arguments: {'userid': user.id});
+                                                context, ChatScreen.routeName,
+                                                arguments: {'userid': user.id})
+                                            .then((value) => {
+                                                  setState(() {
+                                                    // refresh state of Page1
+                                                  })
+                                                });
                                       },
                                       child: Card(
                                         elevation: 10,
@@ -1413,9 +1430,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           ),
                                                                           if (chatData[
                                                                               "unread"])
-                                                                            CircleAvatar(
-                                                                              radius: 8,
-                                                                              backgroundColor: Colors.red,
+                                                                            Positioned(
+                                                                              right: 8,
+                                                                              child: CircleAvatar(
+                                                                                radius: 6,
+                                                                                backgroundColor: Colors.red,
+                                                                              ),
                                                                             ),
                                                                         ]);
                                                                   }

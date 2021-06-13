@@ -181,7 +181,8 @@ class _AddJobState extends State<AddJobScreen> {
                           "maxWage": newJob.maxWage,
                           "askedTo": [],
                           "askedBy": [],
-                          "children": currentUser["children"]
+                          "children": currentUser["children"],
+                          "createdDate": DateTime.now()
                         });
                         setState(() {
                           Navigator.pop(context);

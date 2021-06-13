@@ -51,127 +51,294 @@ class _SelectBabysitter extends State<SelectBabysitter> {
     List askedBy = data["askedBy"];
 
     return Scaffold(
-      body: Container(
-        child: StreamBuilder(
-            stream: _firestore
-                .collection("users")
-                .where("role", isEqualTo: "Babysitter")
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Card> sitterList = [];
-                final sitters = snapshot.data.docs;
-                for (var sitter in sitters) {
-                  if (sitter.data()["wage"] <= data["maxWage"] &&
-                      !askedUsers.contains(sitter.id) &&
-                      !askedBy.contains(sitter.id)) {
-                    final sitterCard = Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, UserScreen.routeName,
-                                    arguments: {
-                                      "userid": sitter.id,
-                                    });
-                              },
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    NetworkImage(sitter.data()["imageUrl"]),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "${sitter.data()["name"]}",
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  "Rating: ${sitter.data()["rating"]}/10",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  "Cost: €${sitter.data()["wage"]} per hour",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            CustomLargeButton(
-                              textColor: kPrimaryColor,
-                              backgroundColor: kSecondaryColor,
-                              btnText: "Ask",
-                              minWidth: 100,
-                              onPressed: () {
-                                _firestore
-                                    .collection("jobs")
-                                    .doc(data["jobID"])
-                                    .update({
-                                  "askedTo": FieldValue.arrayUnion([sitter.id])
-                                });
-                                _firestore
-                                    .collection("users")
-                                    .doc(sitter.id)
-                                    .update({
-                                  "offeredJobs":
-                                      FieldValue.arrayUnion([data["jobID"]])
-                                });
+      body: SafeArea(
+        child: FutureBuilder(
+          future: _firestore.collection("users").doc(loggedInUser.uid).get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // if the snapshot is loading
+              return Text("Loading...");
+            } else {
+              Map<String, dynamic> currentUser = snapshot.data.data();
+              List contacts = currentUser["contacts"];
 
-                                Navigator.pushReplacementNamed(
-                                    context, JobDetailScreen.routeName,
-                                    arguments: {"job": data["jobID"]});
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                    sitterList.add(sitterCard);
-                  }
-                }
-                return Container(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
+              return Column(
+                children: [
+                  Column(
                     children: [
                       SizedBox(
                         height: 50,
                       ),
-                      Column(
-                        children: sitterList,
-                      ),
+                      if (contacts.isNotEmpty)
+                        ListTile(
+                          title: Text("Your Following"),
+                        ),
+                      if (contacts.isNotEmpty)
+                        StreamBuilder(
+                            stream: _firestore
+                                .collection("users")
+                                .where("role", isEqualTo: "Babysitter")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                List<Card> sitterList = [];
+                                final sitters = snapshot.data.docs;
+                                for (var sitter in sitters) {
+                                  if (sitter.data()["wage"] <=
+                                          data["maxWage"] &&
+                                      !askedUsers.contains(sitter.id) &&
+                                      !askedBy.contains(sitter.id) &&
+                                      contacts.contains(sitter.id)) {
+                                    final sitterCard = Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushNamed(context,
+                                                    UserScreen.routeName,
+                                                    arguments: {
+                                                      "userid": sitter.id,
+                                                    }).then((value) => {
+                                                      setState(() {
+                                                        // refresh state of Page1
+                                                      })
+                                                    });
+                                              },
+                                              child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundImage: NetworkImage(
+                                                    sitter.data()["imageUrl"]),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text(
+                                                  "${sitter.data()["name"]}",
+                                                  style:
+                                                      TextStyle(fontSize: 15),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "Rating: ${sitter.data()["rating"]}/10",
+                                                  style:
+                                                      TextStyle(fontSize: 10),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            CustomLargeButton(
+                                              textColor: kPrimaryColor,
+                                              backgroundColor: kSecondaryColor,
+                                              btnText: "Ask",
+                                              minWidth: 100,
+                                              onPressed: () {
+                                                _firestore
+                                                    .collection("jobs")
+                                                    .doc(data["jobID"])
+                                                    .update({
+                                                  "askedTo":
+                                                      FieldValue.arrayUnion(
+                                                          [sitter.id])
+                                                });
+                                                _firestore
+                                                    .collection("users")
+                                                    .doc(sitter.id)
+                                                    .update({
+                                                  "offeredJobs":
+                                                      FieldValue.arrayUnion(
+                                                          [data["jobID"]]),
+                                                  "hasNewOffer": true
+                                                });
+
+                                                Navigator.pushReplacementNamed(
+                                                    context,
+                                                    JobDetailScreen.routeName,
+                                                    arguments: {
+                                                      "job": data["jobID"]
+                                                    });
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                    sitterList.add(sitterCard);
+                                  }
+                                }
+                                return Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      Column(
+                                        children: sitterList,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return Center(
+                                  child: Text(
+                                    "",
+                                    style: TextStyle(
+                                      color: kSecondaryColor,
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
                     ],
                   ),
-                );
-              } else {
-                return Center(
-                  child: Text(
-                    "No match Found",
-                    style: TextStyle(
-                      color: kSecondaryColor,
+                  if (contacts.isNotEmpty)
+                    ListTile(
+                      title: Text("Others"),
                     ),
-                  ),
-                );
-              }
-            }),
+                  StreamBuilder(
+                      stream: _firestore
+                          .collection("users")
+                          .where("role", isEqualTo: "Babysitter")
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Card> sitterList = [];
+                          final sitters = snapshot.data.docs;
+                          for (var sitter in sitters) {
+                            if (sitter.data()["wage"] <= data["maxWage"] &&
+                                !askedUsers.contains(sitter.id) &&
+                                !askedBy.contains(sitter.id) &&
+                                !contacts.contains(sitter.id)) {
+                              final sitterCard = Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushNamed(
+                                              context, UserScreen.routeName,
+                                              arguments: {
+                                                "userid": sitter.id,
+                                              }).then((value) => {
+                                                setState(() {
+                                                  // refresh state of Page1
+                                                })
+                                              });
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundImage: NetworkImage(
+                                              sitter.data()["imageUrl"]),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            "${sitter.data()["name"]}",
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            "Rating: ${sitter.data()["rating"]}/10",
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      CustomLargeButton(
+                                        textColor: kPrimaryColor,
+                                        backgroundColor: kSecondaryColor,
+                                        btnText: "Ask",
+                                        minWidth: 100,
+                                        onPressed: () {
+                                          _firestore
+                                              .collection("jobs")
+                                              .doc(data["jobID"])
+                                              .update({
+                                            "askedTo": FieldValue.arrayUnion(
+                                                [sitter.id])
+                                          });
+                                          _firestore
+                                              .collection("users")
+                                              .doc(sitter.id)
+                                              .update({
+                                            "offeredJobs":
+                                                FieldValue.arrayUnion(
+                                                    [data["jobID"]]),
+                                            "hasNewOffer": true
+                                          });
+
+                                          Navigator.pushReplacementNamed(
+                                              context,
+                                              JobDetailScreen.routeName,
+                                              arguments: {
+                                                "job": data["jobID"]
+                                              });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                              sitterList.add(sitterCard);
+                            }
+                          }
+                          return Container(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Column(
+                                  children: sitterList,
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: Text(
+                              "",
+                              style: TextStyle(
+                                color: kSecondaryColor,
+                              ),
+                            ),
+                          );
+                        }
+                      }),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }

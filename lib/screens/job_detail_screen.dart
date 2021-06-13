@@ -78,6 +78,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             DateTime jobEnd =
                 DateFormat("d MMMM, yyyy, hh:mm a").parse(dateandTime);
 
+            DateTime jobStart = DateFormat("d MMMM, yyyy, hh:mm a")
+                .parse("${job["date"]}, ${job["from"]}");
+
             DateTime currentTime = DateTime.now();
 
             return Card(
@@ -441,7 +444,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        if (job["assignedTo"] == "")
+                        if (job["assignedTo"] == "" &&
+                            !currentTime.isAfter(jobStart))
                           CustomLargeButton(
                             textColor: kSecondaryColor,
                             backgroundColor: kPrimaryColor,
@@ -454,7 +458,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                     "jobID": data["job"],
                                     "maxWage": job["maxWage"],
                                     "askedUsers": job["askedTo"],
-                                    "askedBy": job["askedBy"]
+                                    "askedBy": job["askedBy"],
                                   });
                             },
                           ),
