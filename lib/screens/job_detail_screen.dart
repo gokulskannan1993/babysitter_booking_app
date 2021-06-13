@@ -5,7 +5,6 @@ import 'package:babysitter_booking_app/screens/review_screen.dart';
 import 'package:babysitter_booking_app/screens/select_babysitter_screen.dart';
 import 'package:babysitter_booking_app/screens/user_screen.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
-import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -227,7 +226,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                                   .update({
                                                 "offeredJobs":
                                                     FieldValue.arrayRemove(
-                                                        [data["job"]])
+                                                        [data["job"]]),
+                                                "hasNewOffer": false
                                               });
                                               setState(() {});
                                             }),
