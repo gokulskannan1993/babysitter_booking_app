@@ -4,6 +4,7 @@ import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:number_inc_dec/number_inc_dec.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:intl/intl.dart';
 
@@ -147,16 +148,18 @@ class _AddJobState extends State<AddJobScreen> {
                               TextStyle(color: kSecondaryColor, fontSize: 20),
                         ),
                       ),
-                      NumberPicker(
-                          axis: Axis.horizontal,
-                          minValue: 10,
-                          maxValue: 100,
-                          value: maxWage,
-                          onChanged: (value) {
-                            setState(() {
-                              maxWage = value;
-                            });
-                          }),
+                      NumberInputWithIncrementDecrement(
+                        controller: TextEditingController(),
+                        min: 10,
+                        max: 100,
+                        initialValue: maxWage,
+                        onIncrement: (value) {
+                          maxWage = value;
+                        },
+                        onDecrement: (value) {
+                          maxWage = value;
+                        },
+                      ),
                       SizedBox(
                         height: 30,
                       ),

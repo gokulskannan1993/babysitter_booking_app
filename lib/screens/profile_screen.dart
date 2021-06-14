@@ -267,6 +267,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       // phone
+                      if (currentUser["role"] == "Babysitter")
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, ProfileEditScreen.routeName,
+                                arguments: {"state": "preferences"});
+                          },
+                          child: ListTile(
+                            title: Text(
+                              "Wages and Preferences",
+                              style: TextStyle(color: kSecondaryColor),
+                            ),
+                            leading: Icon(Icons.settings),
+                          ),
+                        ), // pe
                       GestureDetector(
                         onTap: () {
                           _auth.signOut();

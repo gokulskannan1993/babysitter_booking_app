@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:number_inc_dec/number_inc_dec.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import 'constants.dart';
 
@@ -329,8 +331,8 @@ class _ProfileEditScreen extends State<ProfileEditScreen> {
                                   ),
                                   CustomLargeButton(
                                     btnText: "Update",
-                                    textColor: kPrimaryColor,
-                                    backgroundColor: kSecondaryColor,
+                                    textColor: kSecondaryColor,
+                                    backgroundColor: kPrimaryColor,
                                     minWidth: 150,
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
@@ -345,6 +347,195 @@ class _ProfileEditScreen extends State<ProfileEditScreen> {
                                           ProfileScreen.routeName,
                                         );
                                       }
+                                    },
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (data["state"] == "preferences")
+                      Container(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Card(
+                                elevation: 10,
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Minimum wage per hour (€)   ",
+                                        style: TextStyle(
+                                            color: kSecondaryColor,
+                                            fontSize: 15),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      NumberInputWithIncrementDecrement(
+                                        controller: TextEditingController(),
+                                        min: 10,
+                                        max: 100,
+                                        initialValue: currentUser["wage"],
+                                        autovalidate: true,
+                                        onIncrement: (value) {
+                                          currentUser['wage'] = value;
+                                        },
+                                        onDecrement: (value) {
+                                          currentUser['wage'] = value;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                elevation: 10,
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Minimum age of child:      ",
+                                        style: TextStyle(
+                                            color: kSecondaryColor,
+                                            fontSize: 15),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      NumberInputWithIncrementDecrement(
+                                        controller: TextEditingController(),
+                                        min: 0,
+                                        max: 15,
+                                        initialValue:
+                                            currentUser["minAgeofChild"],
+                                        onIncrement: (value) {
+                                          currentUser['minAgeofChild'] = value;
+                                        },
+                                        onDecrement: (value) {
+                                          currentUser['minAgeofChild'] = value;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                elevation: 10,
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Maximum age of child      ",
+                                        style: TextStyle(
+                                            color: kSecondaryColor,
+                                            fontSize: 15),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      NumberInputWithIncrementDecrement(
+                                        controller: TextEditingController(),
+                                        min: 0,
+                                        max: 15,
+                                        initialValue:
+                                            currentUser["maxAgeofChild"],
+                                        onIncrement: (value) {
+                                          currentUser['maxAgeofChild'] = value;
+                                        },
+                                        onDecrement: (value) {
+                                          currentUser['maxAgeofChild'] = value;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                elevation: 10,
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Maximum Number of children   ",
+                                        style: TextStyle(
+                                            color: kSecondaryColor,
+                                            fontSize: 15),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      NumberInputWithIncrementDecrement(
+                                        controller: TextEditingController(),
+                                        min: 1,
+                                        max: 5,
+                                        initialValue:
+                                            currentUser["maxNoofChildren"],
+                                        onIncrement: (value) {
+                                          currentUser['maxNoofChildren'] =
+                                              value;
+                                        },
+                                        onDecrement: (value) {
+                                          currentUser['maxNoofChildren'] =
+                                              value;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  CustomLargeButton(
+                                    btnText: "Cancel",
+                                    textColor: kSecondaryColor,
+                                    backgroundColor: kPrimaryColor,
+                                    minWidth: 150,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  CustomLargeButton(
+                                    btnText: "Update",
+                                    textColor: kSecondaryColor,
+                                    backgroundColor: kPrimaryColor,
+                                    minWidth: 150,
+                                    onPressed: () {
+                                      _firestore
+                                          .collection("users")
+                                          .doc(loggedInUser.uid)
+                                          .update({
+                                        "minAgeofChild":
+                                            currentUser["minAgeofChild"],
+                                        "maxAgeofChild":
+                                            currentUser["maxAgeofChild"],
+                                        "maxNoofChildren":
+                                            currentUser["maxNoofChildren"],
+                                        "wage": currentUser["wage"]
+                                      });
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        ProfileScreen.routeName,
+                                      );
                                     },
                                   )
                                 ],
