@@ -158,46 +158,49 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            // creates message on the logged in user
-                            _firestore
-                                .collection('users')
-                                .doc(loggedInUser.uid)
-                                .collection('chats')
-                                .doc(data["userid"].toString())
-                                .collection('data')
-                                .add({
-                              'text': messageText,
-                              'sender': loggedInUser.uid,
-                              'time': DateTime.now(),
-                              'status': "send"
-                            }).then((value) => {
-                                      // creates message on the target user
-                                      _firestore
-                                          .collection('users')
-                                          .doc(loggedInUser.uid)
-                                          .collection('chats')
-                                          .doc(data["userid"].toString())
-                                          .set({'unread': false}),
-                                      _firestore
-                                          .collection('users')
-                                          .doc(data["userid"])
-                                          .collection('chats')
-                                          .doc(loggedInUser.uid.toString())
-                                          .set({'unread': true}),
-                                      _firestore
-                                          .collection('users')
-                                          .doc(data["userid"])
-                                          .collection('chats')
-                                          .doc(loggedInUser.uid.toString())
-                                          .collection('data')
-                                          .doc(value.id)
-                                          .set({
-                                        'text': messageText,
-                                        'sender': loggedInUser.uid,
-                                        'time': DateTime.now(),
-                                        'status': "send"
-                                      })
-                                    });
+                            if (messageText.isNotEmpty) {
+                              // creates message on the logged in user
+                              _firestore
+                                  .collection('users')
+                                  .doc(loggedInUser.uid)
+                                  .collection('chats')
+                                  .doc(data["userid"].toString())
+                                  .collection('data')
+                                  .add({
+                                'text': messageText,
+                                'sender': loggedInUser.uid,
+                                'time': DateTime.now(),
+                                'status': "send"
+                              }).then((value) => {
+                                        // creates message on the target user
+                                        _firestore
+                                            .collection('users')
+                                            .doc(loggedInUser.uid)
+                                            .collection('chats')
+                                            .doc(data["userid"].toString())
+                                            .set({'unread': false}),
+                                        _firestore
+                                            .collection('users')
+                                            .doc(data["userid"])
+                                            .collection('chats')
+                                            .doc(loggedInUser.uid.toString())
+                                            .set({'unread': true}),
+                                        _firestore
+                                            .collection('users')
+                                            .doc(data["userid"])
+                                            .collection('chats')
+                                            .doc(loggedInUser.uid.toString())
+                                            .collection('data')
+                                            .doc(value.id)
+                                            .set({
+                                          'text': messageText,
+                                          'sender': loggedInUser.uid,
+                                          'time': DateTime.now(),
+                                          'status': "send"
+                                        })
+                                      });
+                            }
+
                             setState(() {
                               messageTextController.clear();
                             });
