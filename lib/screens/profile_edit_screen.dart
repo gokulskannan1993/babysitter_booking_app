@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 import 'constants.dart';
 
@@ -22,6 +21,8 @@ class ProfileEditScreen extends StatefulWidget {
 class _ProfileEditScreen extends State<ProfileEditScreen> {
   Map data = {};
   var _formKey = GlobalKey<FormState>();
+  int childAge = 0;
+  String childGender = "male";
 
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
@@ -543,6 +544,155 @@ class _ProfileEditScreen extends State<ProfileEditScreen> {
                             ],
                           ),
                         ),
+                      ),
+                    if (data["state"] == "children")
+                      Column(
+                        children: [
+                          for (var child in data["children"])
+                            Card(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    "${child["age"]} year old ${child["gender"]}",
+                                    style: TextStyle(color: kSecondaryColor),
+                                  ),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          data["children"].remove(child);
+                                        });
+                                      })
+                                ],
+                              ),
+                            ),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Add Child",
+                                    style: TextStyle(
+                                        color: kSecondaryColor, fontSize: 20),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Select Age",
+                                        style: TextStyle(
+                                            color: kSecondaryColor,
+                                            fontSize: 17),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      NumberInputWithIncrementDecrement(
+                                        controller: TextEditingController(),
+                                        min: 0,
+                                        max: 15,
+                                        initialValue: childAge,
+                                        onIncrement: (value) {
+                                          childAge = value;
+                                        },
+                                        onDecrement: (value) {
+                                          childAge = value;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      CustomLargeButton(
+                                        backgroundColor: childGender == "male"
+                                            ? kSecondaryColor
+                                            : kPrimaryColor,
+                                        textColor: childGender == "male"
+                                            ? kPrimaryColor
+                                            : kSecondaryColor,
+                                        minWidth: 120,
+                                        btnText: "Male",
+                                        onPressed: () {
+                                          setState(() {
+                                            childGender = "male";
+                                          });
+                                        },
+                                      ),
+                                      CustomLargeButton(
+                                        backgroundColor: childGender == "female"
+                                            ? kSecondaryColor
+                                            : kPrimaryColor,
+                                        textColor: childGender == "female"
+                                            ? kPrimaryColor
+                                            : kSecondaryColor,
+                                        minWidth: 120,
+                                        btnText: "Female",
+                                        onPressed: () {
+                                          setState(() {
+                                            childGender = "female";
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  CustomLargeButton(
+                                    textColor: kPrimaryColor,
+                                    backgroundColor: kSecondaryColor,
+                                    btnText: "Add Child",
+                                    onPressed: () {
+                                      data["children"].add({
+                                        "gender": childGender,
+                                        "age": childAge
+                                      });
+                                      setState(() {});
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              CustomLargeButton(
+                                btnText: "Cancel",
+                                textColor: kSecondaryColor,
+                                backgroundColor: kPrimaryColor,
+                                minWidth: 150,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              CustomLargeButton(
+                                btnText: "Update",
+                                textColor: kSecondaryColor,
+                                backgroundColor: kPrimaryColor,
+                                minWidth: 150,
+                                onPressed: () {
+                                  _firestore
+                                      .collection("users")
+                                      .doc(loggedInUser.uid)
+                                      .update({"children": data["children"]});
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    ProfileScreen.routeName,
+                                  );
+                                },
+                              )
+                            ],
+                          )
+                        ],
                       ),
                   ],
                 ),

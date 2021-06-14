@@ -281,6 +281,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             leading: Icon(Icons.settings),
                           ),
+                        ),
+                      if (currentUser["role"] == "Parent")
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, ProfileEditScreen.routeName,
+                                arguments: {
+                                  "state": "children",
+                                  "children": currentUser["children"]
+                                });
+                          },
+                          child: ListTile(
+                            title: Text(
+                              "Edit Children",
+                              style: TextStyle(color: kSecondaryColor),
+                            ),
+                            leading: Icon(Icons.settings),
+                          ),
                         ), // pe
                       GestureDetector(
                         onTap: () {
