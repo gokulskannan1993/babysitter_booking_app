@@ -25,6 +25,8 @@ class CustomLargeTextField extends StatelessWidget {
       style: TextStyle(color: kSecondaryColor),
       textAlign: TextAlign.center,
       obscureText: isObscure,
+      textInputAction: TextInputAction.next,
+      autofocus: true,
       decoration: InputDecoration(
         hintText: hintText,
         contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
