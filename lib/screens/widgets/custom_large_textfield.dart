@@ -7,13 +7,19 @@ class CustomLargeTextField extends StatelessWidget {
   final bool isObscure;
   final Function onChanged;
   final TextInputType inputType;
+  final Function validator;
 
   CustomLargeTextField(
-      {this.hintText, this.onChanged, this.isObscure = false, this.inputType});
+      {this.hintText,
+      this.onChanged,
+      this.isObscure = false,
+      this.inputType,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator: validator,
       keyboardType: inputType,
       onChanged: onChanged,
       style: TextStyle(color: kSecondaryColor),

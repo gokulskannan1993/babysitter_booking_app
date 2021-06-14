@@ -6,6 +6,7 @@ import 'package:babysitter_booking_app/screens/home_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_icon_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_textfield.dart';
+import 'package:babysitter_booking_app/services/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   final _auth = FirebaseAuth.instance;
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
+  var _formKey = GlobalKey<FormState>();
 
   UserModel user;
 
@@ -54,117 +56,139 @@ class _RegisterScreen extends State<RegisterScreen> {
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  height: 150.0,
-                ),
-                SizedBox(
-                  height: 48.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your email",
-                  inputType: TextInputType.emailAddress,
-                  onChanged: (value) {
-                    email = value;
-                  },
-                ), //Enter email
-                SizedBox(
-                  height: 8.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter Password",
-                  isObscure: true,
-                  onChanged: (value) {
-                    password = value;
-                  },
-                ), //Enter Password
-                SizedBox(
-                  height: 8.0,
-                ),
-
-                CustomLargeTextField(
-                  hintText: "Confirm Password",
-                  inputType: TextInputType.phone,
-                  onChanged: (value) {
-                    confirmPassword = value;
-                  },
-                ), // confirm password
-                SizedBox(
-                  height: 8.0,
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CustomLargeButton(
-                      backgroundColor: userType == "Parent"
-                          ? kSecondaryColor
-                          : kPrimaryColor,
-                      textColor: userType == "Parent"
-                          ? kPrimaryColor
-                          : kSecondaryColor,
-                      minWidth: 150,
-                      btnText: "I am a Parent",
-                      onPressed: () {
-                        setState(() {
-                          userType = "Parent";
-                        });
-                      },
-                    ),
-                    CustomLargeButton(
-                      backgroundColor: userType == "Babysitter"
-                          ? kSecondaryColor
-                          : kPrimaryColor,
-                      textColor: userType == "Babysitter"
-                          ? kPrimaryColor
-                          : kSecondaryColor,
-                      minWidth: 150,
-                      btnText: "I am a Babysitter",
-                      onPressed: () {
-                        setState(() {
-                          userType = "Babysitter";
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                Hero(
-                  tag: "registerTag",
-                  child: CustomLargeButton(
-                    textColor: kPrimaryColor,
-                    backgroundColor: kSecondaryColor,
-                    btnText: "Next",
-                    onPressed: () {
-                      if (userType == "Parent") {
-                        user = Parent();
-                      } else {
-                        user = Babysitter();
-                      }
-                      if (confirmPassword == password) {
-                        user.email = email;
-                        user.password = password;
-                        setState(() {
-                          state = "details";
-                        });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text(
-                            "Passwords don't match",
-                            style: TextStyle(color: kPrimaryColor),
-                          ),
-                        ));
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    height: 150.0,
+                  ),
+                  SizedBox(
+                    height: 48.0,
+                  ),
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return "Email field cannot be empty";
+                      } else if (emailAddressValidator(value)) {
+                        return "Please Enter a valid email";
                       }
                     },
+                    hintText: "Enter your email",
+                    inputType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      email = value;
+                    },
+                  ), //Enter email
+                  SizedBox(
+                    height: 8.0,
                   ),
-                ), // Register Button
-              ],
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return "Password cannot be empty";
+                      } else if (minLengthValidator(6, value)) {
+                        return "Password must be minimum 6 characters";
+                      }
+                    },
+                    hintText: "Enter Password",
+                    isObscure: true,
+                    onChanged: (value) {
+                      password = value;
+                    },
+                  ), //Enter Password
+                  SizedBox(
+                    height: 8.0,
+                  ),
+
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) return "Password cannot be empty";
+                    },
+                    hintText: "Confirm Password",
+                    inputType: TextInputType.phone,
+                    onChanged: (value) {
+                      confirmPassword = value;
+                    },
+                  ), // confirm password
+                  SizedBox(
+                    height: 8.0,
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CustomLargeButton(
+                        backgroundColor: userType == "Parent"
+                            ? kSecondaryColor
+                            : kPrimaryColor,
+                        textColor: userType == "Parent"
+                            ? kPrimaryColor
+                            : kSecondaryColor,
+                        minWidth: 150,
+                        btnText: "I am a Parent",
+                        onPressed: () {
+                          setState(() {
+                            userType = "Parent";
+                          });
+                        },
+                      ),
+                      CustomLargeButton(
+                        backgroundColor: userType == "Babysitter"
+                            ? kSecondaryColor
+                            : kPrimaryColor,
+                        textColor: userType == "Babysitter"
+                            ? kPrimaryColor
+                            : kSecondaryColor,
+                        minWidth: 150,
+                        btnText: "I am a Babysitter",
+                        onPressed: () {
+                          setState(() {
+                            userType = "Babysitter";
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  Hero(
+                    tag: "registerTag",
+                    child: CustomLargeButton(
+                      textColor: kPrimaryColor,
+                      backgroundColor: kSecondaryColor,
+                      btnText: "Next",
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          if (userType == "Parent") {
+                            user = Parent();
+                          } else {
+                            user = Babysitter();
+                          }
+                          if (confirmPassword == password) {
+                            user.email = email;
+                            user.password = password;
+                            setState(() {
+                              state = "details";
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                "Passwords don't match",
+                                style: TextStyle(color: kPrimaryColor),
+                              ),
+                            ));
+                          }
+                        }
+                      },
+                    ),
+                  ), // Register Button
+                ],
+              ),
             ),
           ),
         ),
@@ -174,84 +198,106 @@ class _RegisterScreen extends State<RegisterScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Container(
-                  height: 100.0,
-                ),
-                SizedBox(
-                  height: 48.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your name",
-                  onChanged: (value) {
-                    name = value;
-                  },
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your Street Address",
-                  onChanged: (value) {
-                    street = value;
-                  },
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter your County",
-                  onChanged: (value) {
-                    county = value;
-                  },
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                CustomLargeTextField(
-                  hintText: "Enter phone number",
-                  onChanged: (value) {
-                    phone = value;
-                  },
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CustomLargeButton(
-                      minWidth: 150,
-                      textColor: kSecondaryColor,
-                      backgroundColor: kPrimaryColor,
-                      btnText: "Back",
-                      onPressed: () {
-                        setState(() {
-                          state = "email";
-                        });
-                      },
-                    ),
-                    CustomLargeButton(
-                      minWidth: 150,
-                      textColor: kPrimaryColor,
-                      backgroundColor: kSecondaryColor,
-                      btnText: "Next",
-                      onPressed: () {
-                        user.name = name;
-                        user.street = street;
-                        user.county = county;
-                        user.phone = phone;
-                        setState(() {
-                          state = "about";
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Container(
+                    height: 100.0,
+                  ),
+                  SizedBox(
+                    height: 48.0,
+                  ),
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) return "Name cannot be empty";
+                    },
+                    hintText: "Enter your name",
+                    onChanged: (value) {
+                      name = value;
+                    },
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty)
+                        return "Street address cannot be empty";
+                    },
+                    hintText: "Enter your Street Address",
+                    onChanged: (value) {
+                      street = value;
+                    },
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) return "County cannot be empty";
+                    },
+                    hintText: "Enter your County",
+                    onChanged: (value) {
+                      county = value;
+                    },
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  CustomLargeTextField(
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return "Phone number cannot be empty";
+                      } else if (mobileNumberValidator(value)) {
+                        return "Please enter a valid mobile number";
+                      }
+                    },
+                    hintText: "Enter phone number",
+                    onChanged: (value) {
+                      phone = value;
+                    },
+                  ),
+                  SizedBox(
+                    height: 24.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CustomLargeButton(
+                        minWidth: 150,
+                        textColor: kSecondaryColor,
+                        backgroundColor: kPrimaryColor,
+                        btnText: "Back",
+                        onPressed: () {
+                          setState(() {
+                            state = "email";
+                          });
+                        },
+                      ),
+                      CustomLargeButton(
+                        minWidth: 150,
+                        textColor: kPrimaryColor,
+                        backgroundColor: kSecondaryColor,
+                        btnText: "Next",
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            user.name = name;
+                            user.street = street;
+                            user.county = county;
+                            user.phone = phone;
+                            setState(() {
+                              state = "about";
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

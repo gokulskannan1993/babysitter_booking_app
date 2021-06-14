@@ -240,8 +240,8 @@ class _UserScreenState extends State<UserScreen> {
                             children: [
                               if (profileUser["role"] == "Babysitter")
                                 CustomLargeButton(
-                                  textColor: kPrimaryColor,
-                                  backgroundColor: kSecondaryColor,
+                                  textColor: kSecondaryColor,
+                                  backgroundColor: kPrimaryColor,
                                   btnText: List.from(currentUser["contacts"])
                                           .contains(data["userid"])
                                       ? "Unfollow"
@@ -285,8 +285,8 @@ class _UserScreenState extends State<UserScreen> {
                                   },
                                 ),
                               CustomLargeButton(
-                                textColor: kPrimaryColor,
-                                backgroundColor: kSecondaryColor,
+                                textColor: kSecondaryColor,
+                                backgroundColor: kPrimaryColor,
                                 btnText: "Message",
                                 minWidth: 150,
                                 onPressed: () {
