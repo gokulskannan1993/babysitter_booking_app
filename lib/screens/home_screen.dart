@@ -1013,7 +1013,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       DateTime jobStart =
                                           DateFormat("d MMMM, yyyy, hh:mm a")
                                               .parse(dateandTime);
-                                      if (now.isAfter(jobStart)) {
+                                      if (now.isAfter(jobStart) ||
+                                          List.from(currentUser["offeredJobs"])
+                                              .contains(job.id)) {
                                         isAlright = false;
                                       }
 
