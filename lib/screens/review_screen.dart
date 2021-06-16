@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:babysitter_booking_app/screens/constants.dart';
 import 'package:babysitter_booking_app/screens/welcome_screen.dart';
 import 'package:babysitter_booking_app/screens/widgets/custom_large_button.dart';
@@ -200,8 +198,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       ),
                     );
                   } else {
-                    // _currentRating = feedback["score"];
-                    // _ratingText = feedback["text"];
+                    _ratingText = feedback["text"];
                     return Container(
                       padding: EdgeInsets.all(20),
                       child: SafeArea(
