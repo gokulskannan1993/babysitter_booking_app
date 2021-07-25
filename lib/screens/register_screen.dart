@@ -28,7 +28,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   //instance of firestore
   final _firestore = FirebaseFirestore.instance;
   var _formKey = GlobalKey<FormState>();
-
+  var _formKey2 = GlobalKey<FormState>();
   UserModel user;
 
   List children = [];
@@ -199,7 +199,7 @@ class _RegisterScreen extends State<RegisterScreen> {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
             child: Form(
-              key: _formKey,
+              key: _formKey2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -283,7 +283,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                         backgroundColor: kSecondaryColor,
                         btnText: "Next",
                         onPressed: () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey2.currentState.validate()) {
                             user.name = name;
                             user.street = street;
                             user.county = county;

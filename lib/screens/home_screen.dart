@@ -472,7 +472,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                   onPressed: () {
                                                                                     Navigator.pushNamed(context, ChatScreen.routeName, arguments: {
                                                                                       'userid': job["creator"]
-                                                                                    });
+                                                                                    }).then((value) => {
+                                                                                          setState(() {
+                                                                                            // refresh state of Page1
+                                                                                          })
+                                                                                        });
                                                                                   }),
                                                                               if (chatData["unread"])
                                                                                 Positioned(
