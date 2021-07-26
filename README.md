@@ -6,11 +6,6 @@ A new Flutter application.
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+Built a simplified Babysitter booking app using Flutter as the front-end and Firebase as the back-end. The application allows parents to appoint a babysitter to take care of their child. It consists of the login system using Firebase Authentication. The data were handled using Firebase Firestore and Firebase Storage was also used to store files. The application UI is built using Flutter framework from Google. The application allows parents to create a job with designated date and time and maximum wage they are willing to pay. Then, they would be able to find a babysitter who is suitable for them. A babysitter can register and find a job that suits them as well. There is a messaging system implemented as well.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Technologies used: Firebase Authentication, Firebase Storage, Cloud Firestore, Flutter, Dart
